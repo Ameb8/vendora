@@ -13,7 +13,7 @@ import json
 from .order_alert import notify_order
 from .models import Order, OrderItem, Address, Shipment, PhoneAlert, EmailAlert
 from products.models import Product
-from candle_co.permissions import IsAdminOrReadOnly
+from vendora.permissions import IsAdminOrReadOnly
 from .serializers import (
     CreateOrderSerializer,
     OrderSerializer,

@@ -1,5 +1,5 @@
 from rest_framework import viewsets, filters
-from candle_co import settings
+from vendora import settings
 from .permissions import IsAdminOrReadOnly
 from django.db.models import Max
 from django_filters.rest_framework import DjangoFilterBackend
