@@ -1,5 +1,6 @@
 from django.db import models
 from cloudinary.models import CloudinaryField
+from tenants.models import Tenant
 
 class Product(models.Model):
     # Product info
@@ -9,7 +10,8 @@ class Product(models.Model):
     image = CloudinaryField('image', folder='products', null=True, blank=True)
     description = models.TextField(null=True)
 
-    # Inventory data
+    # Tenant data
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
     amount = models.PositiveIntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
