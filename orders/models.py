@@ -25,7 +25,7 @@ class Order(models.Model):
     # Order info
     order_code = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
-    tenant = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    tenant = models.ForeignKey(Tenant, on_delete=models.SET_NULL, null=True)
 
     # Stripe info
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)
@@ -74,11 +74,11 @@ class PhoneAlert(models.Model):
 
     number = PhoneNumberField(max_length=20)
     carrier = models.CharField(max_length=20, choices=CARRIER_CHOICES)
-    tenant = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return f"{self.phone_number} ({self.get_carrier_display()})"
 
 class EmailAlert(models.Model):
     email = models.EmailField(unique=True)
-    tenant = models.ForeignKey(Address, on_delete=models.CASCADE, null=True)
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, null=True)

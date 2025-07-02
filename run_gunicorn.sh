@@ -6,6 +6,6 @@ if [ -f .env ]; then
 fi
 
 # Set DJANGO_SETTINGS_MODULE to production settings
-export DJANGO_SETTINGS_MODULE=candle_co.settings.production
+export DJANGO_SETTINGS_MODULE=vendora.settings.production
 
-gunicorn candle_co.wsgi:application --bind 0.0.0.0:8000 --timeout 120 --log-level debug
+gunicorn vendora.wsgi:application --bind 0.0.0.0:8000 --timeout 120 --log-level debug

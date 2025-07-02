@@ -25,7 +25,7 @@ class ImageInList(OrderedModel):
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
     image = models.ForeignKey(DesignImage, on_delete=models.CASCADE)
     image_list = models.ForeignKey(ImageList, on_delete=models.CASCADE)
-    order_with_respect_to = ['tenant', 'image_list']
 
-    class Meta:
+    class Meta(OrderedModel.Meta):
         unique_together = ('tenant', 'image_list', 'image')
+        ordering = ['tenant', 'image_list', 'order']

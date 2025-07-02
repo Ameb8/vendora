@@ -25,12 +25,28 @@ class Tenant(models.Model):
     # Tenants subdomain
     domain = models.CharField(max_length=255, unique=True, help_text="Custom domain or subdomain")
 
-    # Feature flags / subscription plan
+    # Active User
     is_active = models.BooleanField(default=True)
 
     # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def admin_users(self):
+        return User.objects.filter(tenant_links__tenant=self)
+
     def __str__(self):
         return self.name
+
+
+class TenantAdmin(models.Model):
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name='admin_links')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tenant_links')
+
+    class Meta:
+        unique_together = ('tenant', 'user')  # Prevent duplicates
+
+    def __str__(self):
+        return f"{self.user.username} - {self.tenant.name}"
+

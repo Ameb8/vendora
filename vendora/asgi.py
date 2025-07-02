@@ -1,5 +1,5 @@
 """
-ASGI config for candle_co project.
+ASGI config for vendora project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 

@@ -1,5 +1,5 @@
 """
-WSGI config for candle_co project.
+WSGI config for vendora project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

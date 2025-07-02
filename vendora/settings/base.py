@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'products',
     'accounts',
     'orders',
+    'tenants',
     'page_design',
     'sslserver',
     'ordered_model',
@@ -42,8 +43,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'candle_co.urls'
-WSGI_APPLICATION = 'candle_co.wsgi.application'
+ROOT_URLCONF = 'vendora.urls'
+WSGI_APPLICATION = 'vendora.wsgi.application'
 
 
 REST_FRAMEWORK = {

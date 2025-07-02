@@ -1,26 +1,32 @@
 from rest_framework import viewsets, filters
-from vendora import settings
-from .permissions import IsAdminOrReadOnly
 from django.db.models import Max
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
-import stripe
+from vendora import settings
+from .permissions import IsAdminOrReadOnly
+from tenants.models import Tenant
 from .models import Product, ProductImages
 from .serializers import ProductSerializer, ProductImagesSerializer
-from .permissions import IsAdminOrReadOnly
+from vendora.permissions import IsTenantAdminOrReadOnly
 from .filters import ProductFilter
+import stripe
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [IsTenantAdminOrReadOnly]
 
     # Set filtering
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
     filterset_class = ProductFilter
     ordering_fields = ['price', 'created_at', 'name']
     search_fields = ['name', 'description']
+
+    def perform_create(self, serializer):
+        tenant_slug = self.kwargs.get('tenant_slug') or self.kwargs.get('tenant')
+        tenant = get_object_or_404(Tenant, slug=tenant_slug)
 
     def get_queryset(self):
         return Product.objects.filter(amount__gte=1)
@@ -35,6 +41,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         categories = Product.objects.values_list('category', flat=True).distinct()
         unique_categories = sorted([cat for cat in categories if cat])
         return Response(unique_categories)
+
 
     @action(detail=True, methods=['get'], url_path='all-images')
     def get_all_images(self, request, pk=None):

@@ -13,15 +13,6 @@ CSRF_COOKIE_SECURE = False
 
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DB_URL'),
-        conn_max_age=0,
-        ssl_require=True
-    )
-}
-
-'''
-DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('DB_NAME'),
@@ -31,4 +22,3 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '3306'),
     }
 }
-'''
