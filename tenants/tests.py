@@ -1,31 +1,34 @@
 from django.urls import reverse
+from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from django.contrib.auth.models import User
-from .models import Tenant, TenantAdmin
+from .models import Tenant, TenantAdmin, AdminAccessRequest
 
-class TenantViewSetTests(APITestCase):
-
+class BaseTestCase(TestCase):
     def setUp(self):
-        # Create users
+        # Create common users
         self.user = User.objects.create_user(username='user1', password='pass1234')
         self.other_user = User.objects.create_user(username='user2', password='pass1234')
+        self.admin = User.objects.create_user(username='admin1', password='pass1234')
 
-        # Create a tenant owned by user
+        # Default tenant owned by admin
         self.tenant = Tenant.objects.create(
             slug='tenant1',
             name='Tenant One',
-            owner=self.user,
+            owner=self.admin,
             email='tenant@example.com',
             domain='tenant1.example.com'
         )
 
-        # Add user as TenantAdmin for that tenant
-        TenantAdmin.objects.create(user=self.user, tenant=self.tenant)
+        # Admin is an approved TenantAdmin
+        TenantAdmin.objects.create(user=self.admin, tenant=self.tenant)
 
-        # URLs
-        self.list_url = reverse('tenant-list')  # /tenants/
-        self.detail_url = reverse('tenant-detail', kwargs={'pk': self.tenant.pk})  # /tenants/{id}/
+class TenantViewSetTests(BaseTestCase, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.list_url = reverse('tenant-list')
+        self.detail_url = reverse('tenant-detail', kwargs={'pk': self.tenant.pk})
 
     def test_get_tenants_list_returns_empty(self):
         """
@@ -40,11 +43,11 @@ class TenantViewSetTests(APITestCase):
         """
         GET /tenants/{id}/ as TenantAdmin user returns tenant data
         """
-        self.client.login(username='user1', password='pass1234')
+        self.client.login(username='admin1', password='pass1234')
         response = self.client.get(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['slug'], 'tenant1')
-        self.assertEqual(response.data['owner'], self.user.id)
+        self.assertEqual(response.data['owner'], self.admin.id)
 
     def test_get_tenant_detail_not_admin_forbidden(self):
         """
@@ -95,7 +98,7 @@ class TenantViewSetTests(APITestCase):
         """
         PATCH /tenants/{id}/ as tenant admin updates tenant successfully.
         """
-        self.client.login(username='user1', password='pass1234')
+        self.client.login(username='admin1', password='pass1234')
         data = {'name': 'Updated Tenant Name'}
         response = self.client.patch(self.detail_url, data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -115,7 +118,7 @@ class TenantViewSetTests(APITestCase):
         """
         DELETE /tenants/{id}/ as tenant admin deletes the tenant successfully.
         """
-        self.client.login(username='user1', password='pass1234')
+        self.client.login(username='admin1', password='pass1234')
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Tenant.objects.filter(pk=self.tenant.pk).exists())
@@ -127,3 +130,81 @@ class TenantViewSetTests(APITestCase):
         self.client.login(username='user2', password='pass1234')
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_public_tenant_detail_unauthenticated(self):
+        """
+        GET /tenants/<slug>/public/ should return public info even for unauthenticated users.
+        """
+        public_url = reverse('tenant-public', kwargs={'slug': self.tenant.slug})
+        response = self.client.get(public_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['slug'], self.tenant.slug)
+        self.assertEqual(response.data['name'], self.tenant.name)
+        self.assertEqual(response.data['email'], self.tenant.email)
+        self.assertIn('color_primary', response.data)
+        self.assertIn('color_secondary', response.data)
+        self.assertIn('color_accent', response.data)
+        self.assertIn('image', response.data)
+        self.assertIn('phone', response.data)
+        self.assertIn('address', response.data)
+
+
+class AdminAccessRequestTests(BaseTestCase, APITestCase):
+    def setUp(self):
+        super().setUp()
+        self.request_list_url = reverse('admin-access-request-list')
+
+    def authenticate(self, user):
+        self.client.force_authenticate(user=user)
+
+    def test_user_can_submit_access_request(self):
+        self.authenticate(self.user)
+        response = self.client.post(self.request_list_url, {'tenant': self.tenant.id})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(AdminAccessRequest.objects.count(), 1)
+        self.assertEqual(AdminAccessRequest.objects.first().user, self.user)
+
+    def test_admin_can_view_requests_for_their_tenant(self):
+        # Create a request from another user
+        AdminAccessRequest.objects.create(user=self.other_user, tenant=self.tenant)
+
+        self.authenticate(self.admin)
+        response = self.client.get(self.request_list_url, {'tenant': self.tenant.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['user'], self.other_user.id)
+
+    def test_non_admin_cannot_view_requests(self):
+        AdminAccessRequest.objects.create(user=self.other_user, tenant=self.tenant)
+        self.authenticate(self.other_user)
+        response = self.client.get(self.request_list_url, {'tenant': self.tenant.id})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 0)  # should be denied silently
+
+    def test_admin_can_approve_request(self):
+        req = AdminAccessRequest.objects.create(user=self.other_user, tenant=self.tenant)
+
+        self.authenticate(self.admin)
+        url = reverse('admin-access-request-approve', kwargs={'pk': req.pk})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        req.refresh_from_db()
+        self.assertTrue(req.approved)
+
+        # New TenantAdmin should be created
+        self.assertTrue(TenantAdmin.objects.filter(user=self.other_user, tenant=self.tenant,).exists())
+
+    def test_admin_can_deny_request(self):
+        req = AdminAccessRequest.objects.create(user=self.other_user, tenant=self.tenant)
+
+        self.authenticate(self.admin)
+        url = reverse('admin-access-request-deny', kwargs={'pk': req.pk})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        req.refresh_from_db()
+        self.assertFalse(req.approved)  # still false, but marked as processed
+        self.assertFalse(TenantAdmin.objects.filter(user=self.other_user, tenant=self.tenant).exists())
+

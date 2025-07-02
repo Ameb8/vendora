@@ -6,14 +6,16 @@ class Tenant(models.Model):
     # Unique identifier (e.g. used in subdomains or API keys)
     slug = models.SlugField(unique=True, help_text="Unique tenant identifier, e.g. 'tenant1'")
 
-    # Tenant's display name / store name
+    # Tenant's display name
     name = models.CharField(max_length=255)
 
-    # Owner / admin user for this tenant
+    # Administrative info
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tenants")
+    stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
 
     # Branding / appearance
     image = CloudinaryField('image', folder='products', null=True, blank=True)
+    color_primary = models.CharField(max_length=7, default='#000000')
     color_secondary = models.CharField(max_length=7, default='#000000')
     color_accent = models.CharField(max_length=7, default='#000000')
 
@@ -49,4 +51,10 @@ class TenantAdmin(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.tenant.name}"
+
+class AdminAccessRequest(models.Model):
+    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    approved = models.BooleanField(default=False)
 
