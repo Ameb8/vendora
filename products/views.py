@@ -94,3 +94,5 @@ def create_checkout_session(request, product_id):
         return Response({'error': 'Product not found'}, status=404)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
+
+

@@ -1,10 +1,7 @@
-from rest_framework import routers
-from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import TenantViewSet
 
-router = routers.DefaultRouter()
+router = DefaultRouter()
 router.register(r'tenants', TenantViewSet, basename='tenant')
 
-urlpatterns = [
-    path('api/', include(router.urls)),
-]
+urlpatterns = router.urls
