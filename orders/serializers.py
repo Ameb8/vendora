@@ -19,15 +19,25 @@ class OrderItemSerializer(serializers.ModelSerializer):
         model = OrderItem
         fields = ['product_id', 'quantity']
 
-class CreateOrderSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    items = OrderItemSerializer(many=True)
-    shipping_address = AddressSerializer()
 
-    def validate_items(self, value):
-        if not value:
-            raise serializers.ValidationError("Order must contain at least one item.")
-        return value
+class OrderCreateSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = ['email', 'shipping_address', 'tenant', 'items']
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items')
+        order = Order.objects.create(**validated_data)
+        total = 0
+
+        for item in items_data:
+            product = Product.objects.get(id=item['product_id'])
+            OrderItem.objects.create(order=order, product=product, quantity=item['quantity'])
+            total += product.price * item['quantity']
+
+        return order
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:

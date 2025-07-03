@@ -31,7 +31,7 @@ def email_alert(order, address, password):
     try:
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
             smtp.login(address, password)
-            emails = EmailAlert.objects.values_list('email', flat=True).iterator()
+            emails = EmailAlert.objects.filter(tenant=order.tenant).values_list('email', flat=True)
 
             for recipient in emails:
                 msg = EmailMessage()
@@ -54,7 +54,9 @@ def phone_alert(order, address, password):
         "boost": "@myboostmobile.com"
     }
 
-    for phone in PhoneAlert.objects.iterator():
+    phones = PhoneAlert.objects.filter(tenant=order.tenant)
+
+    for phone in phones:
         to_email = f"{phone.number}{CARRIER_GATEWAYS[phone.carrier]}"
         msg = EmailMessage()
         msg.set_content(get_message(order))

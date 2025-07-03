@@ -15,7 +15,7 @@ from .models import Order, OrderItem, Address, Shipment, PhoneAlert, EmailAlert
 from products.models import Product
 from vendora.permissions import IsAdminOrReadOnly
 from .serializers import (
-    CreateOrderSerializer,
+    OrderCreateSerializer,
     OrderSerializer,
     OrderItemDetailSerializer,
     AddressSerializer,
@@ -26,91 +26,66 @@ from .serializers import (
     ShippingRateRequestSerializer,
 )
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
-STRIPE_WEBHOOK_SECRET = settings.STRIPE_WEBHOOK_SECRET
+
+stripe.api_key = 'your_stripe_secret_key'
+endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
 
 @csrf_exempt
 def stripe_webhook(request):
-    print("Payment Successful")
     payload = request.body
-    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
 
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, STRIPE_WEBHOOK_SECRET
+            payload, sig_header, endpoint_secret
         )
     except ValueError as e:
-        return HttpResponse(status=400)
+        return HttpResponse(status=400)  # Invalid payload
     except stripe.error.SignatureVerificationError as e:
-        return HttpResponse(status=400)
+        return HttpResponse(status=400)  # Invalid signature
 
     # Handle successful payment
     if event['type'] == 'payment_intent.succeeded':
         intent = event['data']['object']
-        order_id = intent['metadata'].get('order_id')
+        payment_intent_id = intent['id']
+        metadata = intent.get('metadata', {})
+        order_code = metadata.get('order_id')
 
-        try: # Update order object
-            order = Order.objects.get(id=order_id)
-            notify_order(order)
+        try:
+            order = Order.objects.get(order_code=order_code)
             order.paid = True
             order.status = 'paid'
-            order.stripe_payment_intent_id = intent['id']
             order.save()
 
-
-            # Update amounts for each Product in inventory
-            for item in order.items.all():
-                product = item.product
-                if product.amount is not None:
-                    product.amount = max(product.amount - item.quantity, 0)
-                    product.save()
+            notify_order(order)
         except Order.DoesNotExist:
             return HttpResponse(status=404)
 
     return HttpResponse(status=200)
 
-class CreateOrderView(APIView):
+
+class PurchaseOrderView(APIView):
     def post(self, request):
-        serializer = CreateOrderSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        serializer = OrderCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            order = serializer.save()
 
-        email = serializer.validated_data['email']
-        items = serializer.validated_data['items']
-        address_data = serializer.validated_data['shipping_address']
+            # Optional: create Stripe PaymentIntent
+            intent = stripe.PaymentIntent.create(
+                amount=order.total_amount,
+                currency='usd',
+                metadata={'order_id': str(order.order_code)}
+            )
+            order.stripe_payment_intent_id = intent['id']
+            order.save()
 
-        # Create address object
-        shipping_address = Address.objects.create(**address_data)
+            return Response({
+                'order_id': order.id,
+                'stripe_client_secret': intent.client_secret,
+                'order_code': str(order.order_code)
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # Create order and calculate total
-        order = Order.objects.create(
-            user=request.user if request.user.is_authenticated else None,
-            email=email,
-            paid=False,
-            total_amount=0,
-            shipping_address = shipping_address
-        )
-
-        total = 0
-        for item in items:
-            product = Product.objects.get(id=item['product_id'])
-            quantity = item['quantity']
-            OrderItem.objects.create(order=order, product=product, quantity=quantity)
-            total += product.price * quantity  # assuming product.price is in cents
-
-        order.total_amount = total
-        order.save()
-
-        # Create Stripe PaymentIntent
-        intent = stripe.PaymentIntent.create(
-            amount=int(total * 100),
-            currency='usd',
-            metadata={'order_id': str(order.id)}
-        )
-
-        return Response({
-            'clientSecret': intent.client_secret,
-            'orderCode': order.order_code
-        }, status=status.HTTP_201_CREATED)
 
 class AdminOrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()

@@ -82,3 +82,4 @@ class PhoneAlert(models.Model):
 class EmailAlert(models.Model):
     email = models.EmailField(unique=True)
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, null=True)
+
