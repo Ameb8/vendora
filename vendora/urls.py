@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
+from vendora.api_router import urlpatterns as api_urlpatterns
+import tenants.urls
 
 
 urlpatterns = [
@@ -27,7 +29,8 @@ urlpatterns = [
     path('design/', include('page_design.urls')),
     path('order/', include('orders.urls')),
     path('metrics/', include('metrics.urls')),
-    path('tenants/', include('tenants.urls')),
+    path('tenants-public/', include('tenants.urls')),
+    path('tenants/', include(api_urlpatterns)),
 ]
 
 # Serve media files in development

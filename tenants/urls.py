@@ -1,14 +1,9 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
+from vendora.api_router import router
 from . import views
 
-router = DefaultRouter()
-router.register(r'tenants', views.TenantViewSet, basename='tenant')
-router.register(r'admin-access-requests', views.AdminAccessRequestViewSet, basename='admin-access-request')
 
-
-urlpatterns = router.urls
-
-urlpatterns += [
-    path('tenants/<slug:slug>/public/', views.PublicTenantDetailView.as_view(), name='tenant-public'),
-]
+urlpatterns = [
+    path('<slug:slug>', views.PublicTenantDetailView.as_view(), name='tenant-public'),
+] + router.urls

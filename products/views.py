@@ -25,11 +25,14 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['name', 'description']
 
     def perform_create(self, serializer):
-        tenant_slug = self.kwargs.get('tenant_slug') or self.kwargs.get('tenant')
-        tenant = get_object_or_404(Tenant, slug=tenant_slug)
+        tenant_pk = self.kwargs.get('tenant_pk')
+        tenant = get_object_or_404(Tenant, pk=tenant_pk)
+        serializer.save(tenant=tenant)
 
     def get_queryset(self):
-        return Product.objects.filter(amount__gte=1)
+        tenant_pk = self.kwargs.get('tenant_pk')
+        tenant = get_object_or_404(Tenant, pk=tenant_pk)
+        return Product.objects.filter(tenant=tenant, amount__gte=1)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -37,17 +40,20 @@ class ProductViewSet(viewsets.ModelViewSet):
         return context
 
     @action(detail=False, methods=['get'], url_path='categories')
-    def get_categories(self, request):
-        categories = Product.objects.values_list('category', flat=True).distinct()
+    def get_categories(self, request, tenant_pk=None):
+        tenant = get_object_or_404(Tenant, pk=tenant_pk)
+        categories = Product.objects.filter(tenant=tenant).values_list('category', flat=True).distinct()
         unique_categories = sorted([cat for cat in categories if cat])
         return Response(unique_categories)
 
-
     @action(detail=True, methods=['get'], url_path='all-images')
-    def get_all_images(self, request, pk=None):
-        product = self.get_object()
-        base_image_url = product.image if product.image else None
+    def get_all_images(self, request, tenant_pk=None, pk=None):
+        tenant = get_object_or_404(Tenant, pk=tenant_pk)
 
+        # Ensure product belongs to the tenant
+        product = get_object_or_404(Product, pk=pk, tenant=tenant)
+
+        base_image_url = product.image if product.image else None
         related_images = product.images.all()
         image_urls = [img.image for img in related_images if img.image]
 
