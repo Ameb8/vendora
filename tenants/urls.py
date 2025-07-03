@@ -1,9 +1,11 @@
 from django.urls import path
 from rest_framework.routers import DefaultRouter
-from vendora.api_router import router
 from . import views
 
+router = DefaultRouter()
+router.register(r'view', views.TenantViewSet)
+router.register(r'admin-access-requests', views.AdminAccessRequestViewSet)
 
 urlpatterns = [
-    path('<slug:slug>', views.PublicTenantDetailView.as_view(), name='tenant-public'),
+    path('public/<slug:slug>', views.PublicTenantDetailView.as_view(), name='tenant-public'),
 ] + router.urls

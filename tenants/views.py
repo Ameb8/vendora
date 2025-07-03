@@ -10,6 +10,7 @@ from .permissions import IsTenantAdmin, IsTenantAdminForAccessRequest
 
 
 class TenantViewSet(viewsets.ModelViewSet):
+    queryset = Tenant.objects.all()
     serializer_class = TenantSerializer
     permission_classes = [IsTenantAdmin]
 

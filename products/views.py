@@ -1,9 +1,10 @@
 from rest_framework import viewsets, filters
-from django.db.models import Max
+from django.db.models import Max, Count
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 from vendora import settings
 from .permissions import IsAdminOrReadOnly
 from tenants.models import Tenant
@@ -13,16 +14,119 @@ from vendora.permissions import IsTenantAdminOrReadOnly
 from .filters import ProductFilter
 import stripe
 
+
+class ProductViewSet(viewsets.ModelViewSet):
+    serializer_class = ProductSerializer
+    permission_classes = [IsTenantAdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['tenant__slug', 'tenant_id', 'tenant__domain']
+
+    def get_queryset(self):
+        queryset = Product.objects.all()
+
+        # Apply tenant filtering for list requests
+        if self.action == 'list':
+            tenant_slug = self.request.query_params.get('tenant__slug')
+            tenant_id = self.request.query_params.get('tenant_id')
+            domain = self.request.query_params.get('tenant__domain')
+
+            # Return empty if no tenant filter is provided
+            if not any([tenant_slug, tenant_id, domain]):
+                return Product.objects.none()
+
+        return queryset
+
+class ProductImagesViewSet(viewsets.ModelViewSet):
+    queryset = ProductImages.objects.all()
+    serializer_class = ProductImagesSerializer
+    permission_classes = [IsAdminOrReadOnly]
+
+
+@api_view(['GET'])
+@permission_classes([IsTenantAdminOrReadOnly])
+def max_price_available_product(request):
+    # Get tenant filter from query parameters
+    tenant_slug = request.query_params.get('tenant__slug')
+    tenant_id = request.query_params.get('tenant_id')
+    tenant_domain = request.query_params.get('tenant__domain')
+
+    if not any([tenant_slug, tenant_id, tenant_domain]):
+        return Response({'error': 'Must provide tenant filter'}, status=400)
+
+    # Build the filter
+    filters = {}
+    if tenant_slug:
+        filters['tenant__slug'] = tenant_slug
+    if tenant_id:
+        filters['tenant__id'] = tenant_id
+    if tenant_domain:
+        filters['tenant__domain'] = tenant_domain
+
+    # Get the max price
+    max_price = Product.objects.filter(**filters).aggregate(
+        max_price=Max('price')
+    )['max_price']
+
+    return Response({'max_price': max_price})
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])  # Make it publicly accessible
+def tenant_product_categories(request):
+    # Get tenant filter from query parameters
+    tenant_slug = request.query_params.get('tenant__slug')
+    tenant_id = request.query_params.get('tenant_id')
+    tenant_domain = request.query_params.get('tenant__domain')
+
+    if not any([tenant_slug, tenant_id, tenant_domain]):
+        return Response({'error': 'Must provide tenant filter'}, status=400)
+
+    # Build the filter
+    filters = {}
+    if tenant_slug:
+        filters['tenant__slug'] = tenant_slug
+    if tenant_id:
+        filters['tenant__id'] = tenant_id
+    if tenant_domain:
+        filters['tenant__domain'] = tenant_domain
+
+    # Get distinct categories with product counts
+    categories = Product.objects.filter(
+        **filters,
+        category__isnull=False  # Exclude null categories
+    ).values('category').annotate(
+        product_count=Count('id')
+    ).order_by('category')
+
+    return Response({
+        'categories': [{
+            'name': item['category'],
+            'product_count': item['product_count']
+        } for item in categories]
+    })
+
+'''
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsTenantAdminOrReadOnly]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['tenant__slug', 'tenant_id', 'tenant__domain']
 
-    # Set filtering
-    filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
-    filterset_class = ProductFilter
-    ordering_fields = ['price', 'created_at', 'name']
-    search_fields = ['name', 'description']
+    def get_queryset(self):
+        queryset = Product.objects.all()
+
+        # Apply tenant filtering for list requests
+        if self.action == 'list':
+            tenant_slug = self.request.query_params.get('tenant__slug')
+            tenant_id = self.request.query_params.get('tenant_id')
+            domain = self.request.query_params.get('tenant__domain')
+
+            # Return empty if no tenant filter is provided
+            if not any([tenant_slug, tenant_id, domain]):
+                return Product.objects.none()
+
+        return queryset
 
     def perform_create(self, serializer):
         tenant_pk = self.kwargs.get('tenant_pk')
@@ -100,5 +204,5 @@ def create_checkout_session(request, product_id):
         return Response({'error': 'Product not found'}, status=404)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
-
+'''
 

@@ -3,17 +3,14 @@ from .models import Product, ProductImages
 import cloudinary.uploader
 
 class ProductSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField()  # writable
-
-    # override image field of output to just url
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['image'] = instance.image.url if instance.image else None
-        return representation
+    image_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = '__all__'
+
+    def get_image_url(self, obj):
+        return obj.image.url if obj.image else None
 
 
 class ProductImagesSerializer(serializers.ModelSerializer):

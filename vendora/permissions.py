@@ -1,3 +1,4 @@
+from rest_framework import permissions
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from tenants.models import TenantAdmin
 
@@ -19,25 +20,29 @@ class IsTenantAdminOrReadOnly(BasePermission):
     """
 
     def has_permission(self, request, view):
+        # Allow read requests
         if request.method in SAFE_METHODS:
             return True
 
+    # Deny unauthenticated users
         if not request.user or not request.user.is_authenticated:
             return False
 
-        # Handle creation
+        # Handle POST (creation)
         if request.method == 'POST':
-            tenant_pk = view.kwargs.get('tenant_pk')
-            return tenant_pk and TenantAdmin.objects.filter(tenant_id=tenant_pk, user=request.user).exists()
+            tenant_id = request.data.get('tenant')
+            if not tenant_id:
+                return False  # Tenant not specified
+            return TenantAdmin.objects.filter(tenant_id=tenant_id, user=request.user).exists()
 
         # Allow permission check to proceed to has_object_permission for detail views
         return True
 
     def has_object_permission(self, request, view, obj):
-        if request.method in SAFE_METHODS:
+        # Allow read access to all
+        if request.method in permissions.SAFE_METHODS:
             return True
 
-        tenant = getattr(obj, 'tenant', None)
-        return tenant and TenantAdmin.objects.filter(tenant=tenant, user=request.user).exists()
-
+        # Check if user is admin of the product's tenant
+        return TenantAdmin.objects.filter(tenant=obj.tenant, user=request.user).exists()
 
