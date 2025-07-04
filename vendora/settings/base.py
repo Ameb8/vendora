@@ -10,27 +10,37 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key")
 
 INSTALLED_APPS = [
+    # Django built-in apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Django extensions
     'django_extensions',
     'django_filters',
+    'django_countries',
     'rest_framework',
     'rest_framework.authtoken',
+
+    # 3-rd party extensions
     'corsheaders',
-    'products',
-    'accounts',
-    'orders',
-    'tenants',
-    'page_design',
     'sslserver',
     'ordered_model',
     'cloudinary',
     'cloudinary_storage',
+
+    # Local apps
+    'accounts',
+    'products',
+    'orders',
+    'tenants',
+    'addresses',
+    'page_design',
 ]
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -130,10 +140,5 @@ TEMPLATES = [
 ]
 
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-}
+
 
