@@ -27,7 +27,7 @@ from .serializers import (
 )
 
 
-stripe.api_key = 'your_stripe_secret_key'
+stripe.api_key = settings.STRIPE_SECRET_KEY
 endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
 
 @csrf_exempt
@@ -47,7 +47,7 @@ def stripe_webhook(request):
     # Handle successful payment
     if event['type'] == 'payment_intent.succeeded':
         intent = event['data']['object']
-        payment_intent_id = intent['id']
+        payment_intent_id = intent.id
         metadata = intent.get('metadata', {})
         order_code = metadata.get('order_id')
 
@@ -64,7 +64,7 @@ def stripe_webhook(request):
     return HttpResponse(status=200)
 
 
-class PurchaseOrderView(APIView):
+class CreateOrderView(APIView):
     def post(self, request):
         serializer = OrderCreateSerializer(data=request.data)
         if serializer.is_valid():
@@ -76,7 +76,7 @@ class PurchaseOrderView(APIView):
                 currency='usd',
                 metadata={'order_id': str(order.order_code)}
             )
-            order.stripe_payment_intent_id = intent['id']
+            order.stripe_payment_intent_id = intent.id
             order.save()
 
             return Response({

@@ -4,7 +4,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 from django.contrib.auth.models import User
 from .models import Tenant, TenantAdmin, AdminAccessRequest
+from vendora.test import BaseTestCase
 
+'''
 class BaseTestCase(TestCase):
     def setUp(self):
         # Create common users
@@ -23,6 +25,7 @@ class BaseTestCase(TestCase):
 
         # Admin is an approved TenantAdmin
         TenantAdmin.objects.create(user=self.admin, tenant=self.tenant)
+'''
 
 class TenantViewSetTests(BaseTestCase, APITestCase):
     def setUp(self):

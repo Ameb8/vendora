@@ -75,7 +75,7 @@ def get_tracking_msg(order):
     msg = []
 
     msg.append("Thank you for your purchase!\n\n")
-    msg.append(f"View your order at https://woolandwicker.vercel.app/shipment/{order.code}/")
+    msg.append(f"View your order at https://woolandwicker.vercel.app/shipment/{order.order_code}/")
 
     return ("").join(msg)
 
