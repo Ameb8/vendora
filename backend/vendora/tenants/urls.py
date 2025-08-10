@@ -1,0 +1,15 @@
+from django.urls import path
+from rest_framework.routers import DefaultRouter
+from . import views
+
+router = DefaultRouter()
+router.register(r'view', views.TenantViewSet)
+router.register(
+    r'admin-access-requests',
+    views.AdminAccessRequestViewSet,
+    basename='admin-access-request'
+)
+
+urlpatterns = [
+    path('public/<slug:slug>', views.PublicTenantDetailView.as_view(), name='tenant-public'),
+] + router.urls

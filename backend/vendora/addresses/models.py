@@ -1,0 +1,14 @@
+from django.db import models
+from django_countries.fields import CountryField
+
+class Address(models.Model):
+    street_address = models.CharField(max_length=255)
+    apartment_address = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    postal_code = models.CharField(max_length=20)
+    country = CountryField()
+
+    def __str__(self):
+        return f"{self.street_address}, {self.city}"
+

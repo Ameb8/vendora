@@ -1,0 +1,26 @@
+.navbar-beige-bg {
+    background-color: #f2ebdc !important;
+}
+
+.navbar-beige-bg .nav-link {
+    color: #4a3f35 !important;
+    text-decoration: none;
+}
+
+.navbar-beige-bg .nav-link:hover,
+.navbar-beige-bg .nav-link:focus {
+    color: #362e24 !important;
+}
+
+.gap-navbar {
+    display: flex;
+    gap: clamp(1rem, 3vw, 2rem);
+}
+
+.shopby-dropdown {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}

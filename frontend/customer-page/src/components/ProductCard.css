@@ -1,0 +1,52 @@
+.product-card {
+    background-color: transparent;
+    transition: transform 0.2s ease;
+}
+
+.product-card:hover {
+    transform: scale(1.03);
+}
+
+.card-img-top {
+    object-fit: cover;
+    height: 380px;
+    width: 100%;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.card-description {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    font-size: 0.9rem;
+}
+
+.product-card:hover .card-description {
+    max-height: 100px;
+    opacity: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .product-card:hover .card-description {
+        display: block;
+    }
+}
+
+.card-body {
+    background-color: #f2ebdc;
+    border-bottom-left-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-img-container {
+    padding: 12px;
+    background-color: #f2ebdc;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}

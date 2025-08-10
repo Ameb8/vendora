@@ -1,0 +1,32 @@
+.vertical-navbar {
+    width: 60px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    background-color: #004d40;
+    color: white;
+    border-right: 5px solid black;
+}
+
+
+.vertical-navbar button {
+    margin-top: 1rem;
+}
+
+.custom-toggler {
+    background: transparent; /* dark green */
+    border: none;
+    box-shadow: none;
+    padding: 0.5rem;
+}
+
+.custom-toggler .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='white' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'%3E%3C/path%3E%3C/svg%3E");
+}
+
+.offcanvas-body::-webkit-scrollbar {
+    display: none;
+}
+

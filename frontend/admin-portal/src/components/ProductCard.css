@@ -1,0 +1,77 @@
+.product-card {
+    height: 400px;
+    background-color: #D6EAF8;
+    transition: transform 0.2s ease;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    transform: scale(1.03);
+}
+
+.product-card img.card-img-top {
+    flex-grow: 1;       /* takes up remaining space */
+    width: calc(100% - 1rem);
+    margin: 0.5rem;
+    border-radius: 4px;
+    object-fit: cover;
+    display: block;
+    height: auto;      /* remove fixed height */
+}
+
+.card-body {
+    padding: 0.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    /* Fix height or min-height so it doesn't grow too much */
+    min-height: 80px; /* enough for title + price + optional desc */
+}
+
+.card-description {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    font-size: 0.9rem;
+}
+
+.product-card:hover .card-description {
+    max-height: 100px;
+    opacity: 1;
+}
+
+
+/* Phone Styling */
+
+@media (max-width: 576px) {
+    .product-card {
+        height: 320px; /* slightly smaller card on mobile */
+        transform: none; /* disable hover scale on mobile (optional) */
+    }
+
+    .product-card img.card-img-top {
+        margin: 0.25rem;
+        width: calc(100% - 0.5rem);
+    }
+
+    .card-body {
+        padding: 0.25rem 0.75rem;
+    }
+
+    .card-title {
+        font-size: 1rem;
+    }
+
+    .card-description {
+        font-size: 0.8rem;
+    }
+
+    .card-text {
+        font-size: 0.9rem;
+    }
+}
+

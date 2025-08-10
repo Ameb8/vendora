@@ -1,0 +1,33 @@
+::-webkit-scrollbar {
+  display: none;
+}
+
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background-color: #E8F6F3;
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #f8f9fa; /* example App.jsx bg */
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.content-with-sidebar {
+  padding-left: 60px;
+  padding-top: 1rem;
+}
+
