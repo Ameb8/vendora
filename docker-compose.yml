@@ -1,0 +1,32 @@
+services:
+  backend_dev:
+    profiles: ["dev"]
+    build:
+      context: ./backend/vendora
+    env_file:
+      - ./backend/vendora/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/vendora:/app
+    command: python manage.py runserver 0.0.0.0:8000
+
+  db_dev:
+    profiles: ["dev", "test"]
+    image: mysql:8.0
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+
+  backend_test:
+    profiles: ["test"]
+    build:
+      context: ./backend/vendora
+    env_file:
+      - ./backend/vendora/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/vendora:/app
+    command: python manage.py test

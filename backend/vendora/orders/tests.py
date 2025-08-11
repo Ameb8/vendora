@@ -10,7 +10,7 @@ import uuid
 class PurchaseOrderViewTests(BaseTestCase, APITestCase):
     def setUp(self):
         super().setUp()
-        self.url = reverse('create-order')  # Ensure this matches your `urls.py` name
+        self.url = reverse('create-order')
 
     @patch('stripe.PaymentIntent.create')
     def test_create_order_success(self, mock_create_intent):
