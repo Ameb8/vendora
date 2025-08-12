@@ -1,4 +1,6 @@
+from django.db import models
 from rest_framework import viewsets, status
+from rest_framework import generics, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotAuthenticated
@@ -93,4 +95,18 @@ class AdminAccessRequestViewSet(viewsets.ModelViewSet):
         req.approved = False
         req.save()
         return Response({'detail': 'Request denied.'})
+
+
+class MyTenantView(generics.ListAPIView):
+    serializer_class = TenantPublicSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        return Tenant.objects.filter(
+            models.Q(owner=user) |
+            models.Q(admin_links__user=user)
+        ).distinct()
+
+
 

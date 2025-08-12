@@ -20,7 +20,8 @@ class TenantPublicSerializer(serializers.ModelSerializer):
             'color_accent',
             'email',
             'phone',
-            'address'
+            'address',
+            'domain',
         ]
 
 class AdminAccessRequestSerializer(serializers.ModelSerializer):
