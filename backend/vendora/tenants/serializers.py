@@ -12,6 +12,7 @@ class TenantPublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tenant
         fields = [
+            'id',
             'slug',
             'name',
             'image',

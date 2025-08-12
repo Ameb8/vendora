@@ -20,6 +20,8 @@ class IsTenantAdminOrReadOnly(BasePermission):
     """
 
     def has_permission(self, request, view):
+        print("User:", request.user, "Authenticated?", request.user.is_authenticated) # DEBUG*****
+
         # Allow read requests
         if request.method in SAFE_METHODS:
             return True
@@ -30,7 +32,11 @@ class IsTenantAdminOrReadOnly(BasePermission):
 
         # Handle POST (creation)
         if request.method == 'POST':
-            tenant_id = request.data.get('tenant')
+
+            tenant_id = int(request.data.get('tenant_id'))
+
+            print("Received tenant_id:", tenant_id) # DEBUG *****
+
             if not tenant_id:
                 return False  # Tenant not specified
             return TenantAdmin.objects.filter(tenant_id=tenant_id, user=request.user).exists()

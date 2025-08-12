@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
+import { useTenant } from '../contexts/TenantContext';
 
 function appendDefaultFormData(formData) {
     formData.append('weight_value', 1);
@@ -12,6 +13,10 @@ function appendDefaultFormData(formData) {
 
 
 function CreateProductForm() {
+    const { currentTenant, loading } = useTenant();
+
+    if (loading) return <div>Loading...</div>;
+
     const { user } = useUser();
     const token = localStorage.getItem('token');
 
@@ -47,6 +52,7 @@ function CreateProductForm() {
 
         const baseURL = import.meta.env.VITE_API_URL;
         const url = `${baseURL}/inventory/products/`;
+        console.log('CreateProduct call url:', url)
 
         const payload = new FormData();
         payload.append('name', formData.name);
@@ -55,6 +61,7 @@ function CreateProductForm() {
         payload.append('price', formData.price);
         payload.append('image', formData.image);
         payload.append('amount', formData.amount);
+        payload.append('tenant_id', currentTenant.id);
 
         appendDefaultFormData(payload);
 

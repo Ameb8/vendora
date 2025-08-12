@@ -6,7 +6,7 @@ from .views import ProductViewSet, max_price_available_product, ProductImagesVie
 
 
 router = DefaultRouter()
-router.register(r'view', ProductViewSet, basename = 'products')
+router.register(r'products', ProductViewSet, basename = 'products')
 
 urlpatterns = [
     path('max-price/', max_price_available_product, name='max-price'),
