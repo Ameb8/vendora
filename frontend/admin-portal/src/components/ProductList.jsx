@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
 import ModifyProduct from './ModifyProduct';
+import { useTenant } from '../contexts/TenantContext';
 
 function ProductList() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [editingProduct, setEditingProduct] = useState(null)
+    const { currentTenant, loading_tenant } = useTenant();
     const baseURL = import.meta.env.VITE_API_URL;
 
     useEffect(() => {
-        fetch(`${baseURL}/inventory/products/`)
+        fetch(`${baseURL}/inventory/products/?tenant_id=${currentTenant.id}`, {})
             .then(res => res.json())
             .then(data => {
                 setProducts(data);
@@ -42,7 +44,7 @@ function ProductList() {
         }
     };
 
-    if (loading) {
+    if (loading || loading_tenant) {
         return <div className="text-center mt-5">Loading products...</div>;
     }
 

@@ -2,14 +2,13 @@ from rest_framework import permissions
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 from tenants.models import TenantAdmin
 
+
 class IsAdminOrReadOnly(BasePermission):
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return True
         return request.user and request.user.is_staff
 
-from rest_framework.permissions import BasePermission, SAFE_METHODS
-from tenants.models import TenantAdmin
 
 
 class IsTenantAdminOrReadOnly(BasePermission):
@@ -33,7 +32,7 @@ class IsTenantAdminOrReadOnly(BasePermission):
         # Handle POST (creation)
         if request.method == 'POST':
 
-            tenant_id = int(request.data.get('tenant_id'))
+            tenant_id = request.data.get('tenant_id')
 
             print("Received tenant_id:", tenant_id) # DEBUG *****
 
@@ -48,6 +47,13 @@ class IsTenantAdminOrReadOnly(BasePermission):
         # Allow read access to all
         if request.method in permissions.SAFE_METHODS:
             return True
+
+        # DEBUG *******
+        print("OBJ tenant:", obj.tenant.id)
+        print("User admin tenants:", list(
+            TenantAdmin.objects.filter(user=request.user).values_list('tenant_id', flat=True)
+        ))
+        # END DEBUG ***
 
         # Check if user is admin of the product's tenant
         return TenantAdmin.objects.filter(tenant=obj.tenant, user=request.user).exists()

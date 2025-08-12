@@ -61,6 +61,7 @@ function CreateProductForm() {
         payload.append('price', formData.price);
         payload.append('image', formData.image);
         payload.append('amount', formData.amount);
+        payload.append('tenant', currentTenant.id);
         payload.append('tenant_id', currentTenant.id);
 
         appendDefaultFormData(payload);
