@@ -16,11 +16,10 @@ function ShopBy({ onClose }) {
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const res = await fetch(`${baseURL}/inventory/categories/?tenant__slug=${slug}/`);
+                const res = await fetch(`${baseURL}/inventory/categories/?tenant__slug=${slug}`);
                 if (!res.ok) throw new Error('Failed to fetch categories');
                 const data = await res.json();
-                console.log("category response: ", data); // DEBUG *******
-                setCategories(data);
+                setCategories(data.categories);
             } catch (err) {
                 console.error(err);
                 setCategories([]);
@@ -54,15 +53,15 @@ function ShopBy({ onClose }) {
 
             <div className="d-flex gap-3 flex-wrap">
                 {categories.map((category) => {
-                    const isActive = currentCategories.includes(category);
+                    const isActive = currentCategories.includes(category.name);
                     return (
                         <button
-                            key={category}
+                            key={category.name}
                             type="button"
                             className={`btn ${isActive ? 'btn-primary' : 'btn-outline-primary'}`}
                             onClick={() => toggleCategory(category)}
                         >
-                            {category}
+                            {category.name}
                         </button>
                     );
                 })}

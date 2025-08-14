@@ -27,6 +27,8 @@ function App() {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/tenants/public/${slug}`);
                 setTenant(response.data);
+
+                console.log(`Tenant Products: ${response.data}`); // DEBUG *****
             } catch (err) {
                 console.error("Failed to load tenant data:", err);
             }

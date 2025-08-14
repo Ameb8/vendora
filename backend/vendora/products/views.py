@@ -98,6 +98,12 @@ def tenant_product_categories(request):
         product_count=Count('id')
     ).order_by('category')
 
+    # DEBUG *******
+    print(f"\n\nCategories:\n{categories}\n")
+    print(f"Query:\n{categories.query}\n")
+    print(f"Filters:\n{filters}\n\n")
+    # END DEBUG ***
+
     return Response({
         'categories': [{
             'name': item['category'],
