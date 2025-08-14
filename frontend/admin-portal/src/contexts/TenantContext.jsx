@@ -4,7 +4,11 @@ const TenantContext = createContext();
 
 export const TenantProvider = ({ children }) => {
     const [tenants, setTenants] = useState([]);
-    const [currentTenant, setCurrentTenant] = useState(null);
+    const [currentTenant, setCurrentTenant] = useState(() => {
+        // Load previously selected tenant from sessionStorage on first render
+        const savedTenant = sessionStorage.getItem("currentTenant");
+        return savedTenant ? JSON.parse(savedTenant) : null;
+    });
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -27,6 +31,12 @@ export const TenantProvider = ({ children }) => {
         };
         fetchTenants();
     }, []);
+
+    useEffect(() => {
+        if (currentTenant) {
+            sessionStorage.setItem("currentTenant", JSON.stringify(currentTenant));
+        }
+    }, [currentTenant]);
 
     return (
         <TenantContext.Provider

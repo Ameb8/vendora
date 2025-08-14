@@ -21,7 +21,7 @@ function ProductList() {
                 console.error('Failed to fetch products:', err);
                 setLoading(false);
             });
-    }, []);
+    }, [currentTenant]);
 
     const handleDeleteProduct = (product) => {
         if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {

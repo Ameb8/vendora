@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTenant } from '../contexts/TenantContext';
 
 export default function ModifyProduct({ product, onClose }) {
@@ -10,6 +10,8 @@ export default function ModifyProduct({ product, onClose }) {
     const [image, setImage] = useState(null);
     const { currentTenant, loading_tenant } = useTenant();
 
+    useEffect(() => { }, [currentTenant]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -19,8 +21,8 @@ export default function ModifyProduct({ product, onClose }) {
         formData.append('price', price);
         formData.append('description', description);
         formData.append('amount', amount);
-        formData.append('tenant_id', currentTenant.id);
-        formData.append('tenant', currentTenant.id);
+        //formData.append('tenant_id', currentTenant.id);
+        //formData.append('tenant', currentTenant.id);
 
         if (image) { // Append image if updated
             formData.append('image', image);

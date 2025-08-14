@@ -10,6 +10,7 @@ import OrderNotifications from "./OrderNotifications.jsx";
 import MetricsDashboard from "./MetricsDashboard.jsx";
 import { TenantProvider, useTenant } from '../contexts/TenantContext';
 import SelectTenant from './SelectTenant';
+import TenantDropdown from "./TenantDropdown.jsx";
 
 function HomeContent() {
     const { tenants, currentTenant, setCurrentTenant, loading } = useTenant();
@@ -38,6 +39,7 @@ function HomePage() {
         <TenantProvider>
             <Router>
                 <Navbar />
+                <TenantDropdown />
                 <HomeContent />
             </Router>
         </TenantProvider>

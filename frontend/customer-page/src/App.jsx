@@ -25,7 +25,7 @@ function App() {
     useEffect(() => {
         async function fetchTenant() {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}tenants/public/${slug}`);
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/tenants/public/${slug}`);
                 setTenant(response.data);
             } catch (err) {
                 console.error("Failed to load tenant data:", err);

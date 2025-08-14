@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { ProductProvider} from "./contexts/ProductContext.jsx";
@@ -22,7 +22,10 @@ createRoot(document.getElementById('root')).render(
                   <CartProvider>
                       <CartUIProvider>
                           <Toaster />
-                          <App />
+
+                          <Routes>
+                              <Route path="/:slug/*" element={<App />} />
+                          </Routes>
                       </CartUIProvider>
                   </CartProvider>
               </Elements>

@@ -1,21 +1,25 @@
 import { useEffect, useState, useContext } from 'react';
+import {useParams} from "react-router-dom";
 import { Button } from 'react-bootstrap';
 import { ProductContext } from '../contexts/ProductContext.jsx';
 import PriceSlider from '../components/PriceSlider';
+
 
 function ShopBy({ onClose }) {
     const { addCategory, removeCategory, currentCategories } = useContext(ProductContext);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { slug } = useParams();
     const baseURL = import.meta.env.VITE_API_URL;
 
     // Fetch categories list on mount
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const res = await fetch(`${baseURL}/inventory/products/categories`);
+                const res = await fetch(`${baseURL}/inventory/categories/?tenant__slug=${slug}/`);
                 if (!res.ok) throw new Error('Failed to fetch categories');
                 const data = await res.json();
+                console.log("category response: ", data); // DEBUG *******
                 setCategories(data);
             } catch (err) {
                 console.error(err);

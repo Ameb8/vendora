@@ -1,9 +1,11 @@
 import { useEffect, useState, useContext } from 'react';
+import { useParams } from "react-router-dom";
 import { ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { ProductContext } from '../contexts/ProductContext';
 
 function FilterCategory() {
     const [categoryList, setCategoryList] = useState([]);
+    const { slug } = useParams();
     const {
         addCategory,
         removeCategory,
@@ -15,7 +17,7 @@ function FilterCategory() {
     useEffect(() => {
         const fetchCategories = async () => {
             try {
-                const res = await fetch(`${baseURL}/inventory/products/categories`);
+                const res = await fetch(`${baseURL}/inventory/categories/?tenant__slug=${slug}`);
                 const data = await res.json();
                 setCategoryList(data);
             } catch (err) {

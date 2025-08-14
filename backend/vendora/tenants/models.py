@@ -42,6 +42,14 @@ class Tenant(models.Model):
     def __str__(self):
         return self.name
 
+    def has_admin_privilege(self, user: User) -> bool:
+        """
+        Returns True if the user is either the tenant owner or an admin of this tenant.
+        """
+        if user == self.owner:
+            return True
+        return TenantAdmin.objects.filter(tenant=self, user=user).exists()
+
 
 class TenantAdmin(models.Model):
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name='admin_links')
