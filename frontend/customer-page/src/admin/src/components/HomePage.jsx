@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Navbar from './Navbar';
 import ProductList from './ProductList';
 import UpdateAbout from "./UpdateAbout.jsx";
@@ -21,14 +21,14 @@ function HomeContent() {
     return (
         <div className="container-fluid content-with-sidebar">
             <Routes>
-                <Route path="/" element={<ProductList />} />
-                <Route path="/orders" element={<PaidOrders />} />
-                <Route path="/about" element={<UpdateAbout />} />
-                <Route path="/contact" element={<UpdateContact />} />
-                <Route path="/create-user" element={<AdminRegisterForm />} />
-                <Route path="/create-product" element={<CreateProductForm />} />
-                <Route path="/order-notifications" element={<OrderNotifications />} />
-                <Route path="/metrics" element={<MetricsDashboard />} />
+                <Route index element={<ProductList />} />
+                <Route path="orders" element={<PaidOrders />} />
+                <Route path="about" element={<UpdateAbout />} />
+                <Route path="contact" element={<UpdateContact />} />
+                <Route path="create-user" element={<AdminRegisterForm />} />
+                <Route path="create-product" element={<CreateProductForm />} />
+                <Route path="order-notifications" element={<OrderNotifications />} />
+                <Route path="metrics" element={<MetricsDashboard />} />
             </Routes>
         </div>
     );
@@ -37,11 +37,9 @@ function HomeContent() {
 function HomePage() {
     return (
         <TenantProvider>
-            <Router>
                 <Navbar />
                 <TenantDropdown />
                 <HomeContent />
-            </Router>
         </TenantProvider>
     );
 }

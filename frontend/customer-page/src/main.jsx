@@ -9,6 +9,7 @@ import { CartUIProvider } from "./contexts/CartUIContext.jsx";
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import App from './App.jsx'
+import AdminRoot from './admin/src/AdminRoot.jsx'
 import './index.css'
 import { Toaster } from "react-hot-toast";
 
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')).render(
                           <Toaster />
 
                           <Routes>
+                              <Route path="/admin/*" element={<AdminRoot />} />
                               <Route path="/:slug/*" element={<App />} />
                           </Routes>
                       </CartUIProvider>
