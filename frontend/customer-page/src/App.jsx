@@ -46,7 +46,12 @@ function App() {
         >
             <div>
                 <Appbar tenant={tenant} />
-                <Navbar selectedPage={selectedPage} setSelectedPage={setSelectedPage} tenant={tenant} />
+                <Navbar
+                    selectedPage={selectedPage}
+                    setSelectedPage={setSelectedPage}
+                    tenant={tenant}
+                    slug={slug}
+                />
             </div>
             <div className="flex-grow-1 overflow-auto">
                 <Routes>

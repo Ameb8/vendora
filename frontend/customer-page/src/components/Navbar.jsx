@@ -1,39 +1,30 @@
 import { NavLink } from 'react-router-dom';
 import './Navbar.css';
 
-function Navbar() {
+function Navbar({ slug }) {
     return (
         <nav className="navbar navbar-beige-bg shadow-sm justify-content-center">
             <ul className="nav flex-nowrap justify-content-center gap-navbar">
                 <li className="nav-item">
                     <NavLink
-                        to="/inventory"
+                        to={`/${slug}/inventory`}
                         className={({ isActive }) => "nav-link btn btn-link " + (isActive ? "active" : "")}
                     >
                         Inventory
                     </NavLink>
                 </li>
                 <li className="nav-item">
-                    <NavLink
-                        to="/aboutus"
-                        className={({ isActive }) => "nav-link btn btn-link " + (isActive ? "active" : "")}
-                    >
+                    <NavLink to={`/${slug}/aboutus`} className={({ isActive }) => "nav-link btn btn-link " + (isActive ? "active" : "")}>
                         About Us
                     </NavLink>
                 </li>
                 <li className="nav-item">
-                    <NavLink
-                        to="/contact"
-                        className={({ isActive }) => "nav-link btn btn-link " + (isActive ? "active" : "")}
-                    >
+                    <NavLink to={`/${slug}/contact`} className={({ isActive }) => "nav-link btn btn-link " + (isActive ? "active" : "")}>
                         Contact
                     </NavLink>
                 </li>
                 <li className="nav-item">
-                    <NavLink
-                        to="/shipment"
-                        className={({ isActive }) => "nav-link btn btn-link " + (isActive ? "active" : "")}
-                    >
+                    <NavLink to={`/${slug}/shipment`} className={({ isActive }) => "nav-link btn btn-link " + (isActive ? "active" : "")}>
                         Track Order
                     </NavLink>
                 </li>

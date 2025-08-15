@@ -1,9 +1,11 @@
 import { useEffect, useState, useContext } from 'react';
+import {useParams} from "react-router-dom";
 import { ProductContext } from '../contexts/ProductContext';
 import './PriceSlider.css';
 
 function PriceSlider() {
     const baseURL = import.meta.env.VITE_API_URL;
+    const { slug } = useParams();
     const {
         setMinPrice,
         setMaxPrice,
@@ -17,7 +19,7 @@ function PriceSlider() {
     useEffect(() => {
         const fetchMax = async () => {
             try {
-                const response = await fetch(`${baseURL}/inventory/max-price/`);
+                const response = await fetch(`${baseURL}/inventory/max-price/?tenant__slug=${slug}`);
                 const data = await response.json();
                 const fetchedMax = data.max_price + 0.01 || 100;
                 setMaxLimit(fetchedMax);
