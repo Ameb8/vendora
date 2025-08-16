@@ -1,6 +1,6 @@
 from django.db import models
-from rest_framework import viewsets, status
-from rest_framework import generics, permissions
+from rest_framework import viewsets, status, generics, permissions
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotAuthenticated
@@ -45,12 +45,30 @@ class TenantViewSet(viewsets.ModelViewSet):
         # Create TenantAdmin entry for this user and the new tenant
         TenantAdmin.objects.create(user=user, tenant=tenant)
 
+class PublicTenantDetailView(APIView):
+    permission_classes = []
+
+    def get(self, request, slug=None):
+        if slug:
+            try:
+                tenant = Tenant.objects.get(slug=slug, is_active=True)
+                serializer = TenantPublicSerializer(tenant)
+                return Response(serializer.data)
+            except Tenant.DoesNotExist:
+                return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            tenants = Tenant.objects.filter(is_active=True)
+            serializer = TenantPublicSerializer(tenants, many=True)
+            return Response(serializer.data)
+
+
+'''
 class PublicTenantDetailView(RetrieveAPIView):
     queryset = Tenant.objects.filter(is_active=True)
     serializer_class = TenantPublicSerializer
     lookup_field = 'slug'
     permission_classes = []
-
+'''
 
 class AdminAccessRequestViewSet(viewsets.ModelViewSet):
     queryset = AdminAccessRequest.objects.all()

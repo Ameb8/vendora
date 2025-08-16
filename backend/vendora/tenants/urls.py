@@ -11,6 +11,7 @@ router.register(
 )
 
 urlpatterns = [
+    path('public/', views.PublicTenantDetailView.as_view(), name='tenant-list'),
     path('public/<slug:slug>', views.PublicTenantDetailView.as_view(), name='tenant-public'),
     path('my-tenants/', views.MyTenantView.as_view(), name='my-tenants'),
 ] + router.urls

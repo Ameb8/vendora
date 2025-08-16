@@ -9,13 +9,13 @@ function ProductList({ tenant }) {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
-    const url = `${import.meta.env.VITE_API_URL}/inventory/products/?tenant__slug=${tenant.slug}`;
 
     // Fetch products on mount or when tenant changes
     useEffect(() => {
         async function fetchProducts() {
             setLoading(true);
             try {
+                const url = `${import.meta.env.VITE_API_URL}/inventory/products/?tenant__slug=${tenant.slug}`;
                 const response = await axios.get(url, {
                     params: {
                         tenant__slug: tenant.slug

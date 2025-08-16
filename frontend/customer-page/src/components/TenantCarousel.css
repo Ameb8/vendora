@@ -1,0 +1,14 @@
+.tenant-carousel {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.tenant-card {
+    width: 200px;
+    height: 200px;
+    flex: 0 0 auto;
+}
+
+.tenant-card .card-body {
+    height: 100%;
+}
