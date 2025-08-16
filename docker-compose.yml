@@ -36,7 +36,7 @@ services:
       - ./frontend/customer-page/.env
 
   admin-portal:
-    profiles: ["dev"]
+    profiles: ["legacy"]
     container_name: admin-portal-dev
     working_dir: /app
     build:

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'addresses',
     'page_design',
     'payments',
+    'subscriptions',
 ]
 
 

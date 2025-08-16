@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils import timezone
+
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -6,6 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
+
 from .models import Tenant, TenantAdmin, AdminAccessRequest
 from .serializers import TenantSerializer, TenantPublicSerializer, AdminAccessRequestSerializer
 from .permissions import IsTenantAdmin, IsTenantAdminForAccessRequest
@@ -49,15 +52,30 @@ class PublicTenantDetailView(APIView):
     permission_classes = []
 
     def get(self, request, slug=None):
-        if slug:
+        now = timezone.now()
+
+        if slug: # Get specified tenant
             try:
-                tenant = Tenant.objects.get(slug=slug, is_active=True)
+                tenant = Tenant.objects.get( # Filter for active tenant with slug
+                    slug=slug,
+                    subscriptions__status='active',
+                    subscriptions__current_period_end__gt=now
+                )
+
+                # Return specified tenant
                 serializer = TenantPublicSerializer(tenant)
                 return Response(serializer.data)
-            except Tenant.DoesNotExist:
+
+            except Tenant.DoesNotExist: # No active tenant with specified slug
                 return Response({'detail': 'Not found.'}, status=status.HTTP_404_NOT_FOUND)
-        else:
-            tenants = Tenant.objects.filter(is_active=True)
+
+        else: # Get all active tenants
+            tenants = Tenant.objects.filter( # Filter with active subscription
+                subscriptions__status='active',
+                subscriptions__current_period_end__gt=now
+            ).distinct()
+
+            # Return active tenants
             serializer = TenantPublicSerializer(tenants, many=True)
             return Response(serializer.data)
 

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 from cloudinary.models import CloudinaryField
 
@@ -38,6 +39,17 @@ class Tenant(models.Model):
     @property
     def admin_users(self):
         return User.objects.filter(tenant_links__tenant=self)
+
+    @property
+    def current_subscription(self):
+        return self.subscriptions.filter(
+            status='active',
+            current_period_end__gt=timezone.now()
+        ).order_by('-current_period_end').first()
+
+    @property
+    def is_subscribed(self):
+        return self.current_subscription is not None
 
     def __str__(self):
         return self.name

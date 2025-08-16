@@ -15,3 +15,4 @@ urlpatterns = [
     path('public/<slug:slug>', views.PublicTenantDetailView.as_view(), name='tenant-public'),
     path('my-tenants/', views.MyTenantView.as_view(), name='my-tenants'),
 ] + router.urls
+
