@@ -5,6 +5,8 @@ import App from './App.jsx';
 import { UserProvider } from './contexts/UserContext';
 
 export default function AdminRoot() {
+
+
     return (
         <UserProvider>
             <App />

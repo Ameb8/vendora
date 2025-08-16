@@ -10,6 +10,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import App from './App.jsx'
 import AdminRoot from './admin/src/AdminRoot.jsx'
+import HomePage from './components/HomePage.jsx';
 import './index.css'
 import { Toaster } from "react-hot-toast";
 
@@ -25,6 +26,7 @@ createRoot(document.getElementById('root')).render(
                           <Toaster />
 
                           <Routes>
+                              <Route path="/" element={<HomePage />} />
                               <Route path="/admin/*" element={<AdminRoot />} />
                               <Route path="/:slug/*" element={<App />} />
                           </Routes>

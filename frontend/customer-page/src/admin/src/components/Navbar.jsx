@@ -39,49 +39,49 @@ function Navbar() {
                 </div>
                 <div className="offcanvas-body d-flex flex-column gap-3">
                     <button className="btn btn-outline-light text-start" onClick={() => {
-                        navigate('/');
+                        navigate('');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         🏠 Product List
                     </button>
                     <button className="btn btn-outline-light text-start" onClick={() => {
-                        navigate('/orders');
+                        navigate('orders');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         📦 Paid Orders
                     </button>
                     <button className="btn btn-outline-light text-start" onClick={() => {
-                        navigate('/about');
+                        navigate('about');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         📝 Update About
                     </button>
                     <button className="btn btn-outline-light text-start" onClick={() => {
-                        navigate('/contact');
+                        navigate('contact');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         📞 Update Contact
                     </button>
                     <button className="btn btn-outline-light text-start" onClick={() => {
-                        navigate('/create-user');
+                        navigate('create-user');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         👤 Create Admin Account
                     </button>
                     <button className="btn btn-outline-light text-start" onClick={() => {
-                        navigate('/create-product');
+                        navigate('create-product');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         ➕ Create New Product
                     </button>
                     <button className="btn btn-outline-light text-start" onClick={() => {
-                        navigate('/order-notifications');
+                        navigate('order-notifications');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         🔔 Manage Order Alerts
                     </button>
                     <button className="btn btn-outline-light text-start" onClick={() => {
-                        navigate('/metrics');
+                        navigate('metrics');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         📊 Business Metrics
