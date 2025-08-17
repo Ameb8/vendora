@@ -1,3 +1,84 @@
-from django.shortcuts import render
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
-# Create your views here.
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.response import Response
+
+from datetime import datetime
+import stripe
+
+from tenants.models import Tenant
+from .models import Subscription, SubscriptionPlan
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_checkout_session(request):
+    tenant = request.user.tenant
+    plan_id = request.data.get('plan_id')
+
+    plan = SubscriptionPlan.objects.get(id=plan_id)
+
+    if not tenant.stripe_customer_id:
+        customer = stripe.Customer.create(email=request.user.email)
+        tenant.stripe_customer_id = customer.id
+        tenant.save()
+    else:
+        customer = stripe.Customer.retrieve(tenant.stripe_customer_id)
+
+    session = stripe.checkout.Session.create(
+        customer=customer.id,
+        payment_method_types=['card'],
+        line_items=[{
+            'price': plan.stripe_price_id,
+            'quantity': 1,
+        }],
+        mode='subscription',
+        success_url=settings.FRONTEND_URL + '/success?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url=settings.FRONTEND_URL + '/cancelled',
+    )
+
+    return Response({'checkout_url': session.url})
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+        )
+    except Exception:
+        return Response(status=400)
+
+    if event['type'] == 'customer.subscription.created':
+        sub_data = event['data']['object']
+        customer_id = sub_data['customer']
+        stripe_subscription_id = sub_data['id']
+        plan_price_id = sub_data['items']['data'][0]['price']['id']
+        current_period_end = datetime.fromtimestamp(sub_data['current_period_end'])
+
+        tenant = Tenant.objects.get(stripe_customer_id=customer_id)
+        plan = SubscriptionPlan.objects.get(stripe_price_id=plan_price_id)
+
+        Subscription.objects.update_or_create(
+            tenant=tenant,
+            stripe_subscription_id=stripe_subscription_id,
+            defaults={
+                'plan': plan,
+                'current_period_end': current_period_end,
+                'status': sub_data['status'],
+            }
+        )
+
+    elif event['type'] == 'invoice.payment_failed':
+        sub_id = event['data']['object']['subscription']
+        Subscription.objects.filter(stripe_subscription_id=sub_id).update(status='past_due')
+
+    return Response(status=200)
+
