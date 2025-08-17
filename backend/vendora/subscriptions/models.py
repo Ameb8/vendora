@@ -31,5 +31,3 @@ class Subscription(models.Model):
                 self.current_period_end is not None and
                 self.current_period_end > timezone.now()
         )
-
-

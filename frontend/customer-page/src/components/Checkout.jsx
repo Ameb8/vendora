@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { useCart } from '../contexts/CartContext';
+import { useTenant } from '../contexts/TenantContext';
 import AddressForm from './AddressForm';
 
 export default function Checkout() {
@@ -13,6 +14,7 @@ export default function Checkout() {
     const [email, setEmail] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
     const { cart, clearCart } = useCart();
+    const { tenant } = useTenant();
 
     const [address, setAddress] = useState({
         full_name: "",
@@ -81,8 +83,9 @@ export default function Checkout() {
     };
 
     return (
-        <div className="container my-5">
-            <div className="card shadow-sm p-4" style={{ backgroundColor: "#fffdf9" }}>
+        <div
+            className="container my-5">
+            <div className="card shadow-sm p-4" style={{ backgroundColor: tenant.color_primary }}>
                 <h3 className="mb-3 text-center">Checkout</h3>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-3">

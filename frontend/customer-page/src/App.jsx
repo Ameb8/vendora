@@ -35,8 +35,6 @@ function App() {
                 <Navbar
                     selectedPage={selectedPage}
                     setSelectedPage={setSelectedPage}
-                    tenant={tenant}
-                    slug={slug}
                 />
             </div>
             <div className="flex-grow-1 overflow-auto">

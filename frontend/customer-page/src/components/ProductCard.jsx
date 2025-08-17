@@ -1,6 +1,8 @@
+import { useTenant } from '../contexts/TenantContext.jsx';
 import './ProductCard.css';
 
 function ProductCard({ product, onClick }) {
+    const { tenant } = useTenant();
     function formatPrice(price) {
         const num = Number(price);
         return !isNaN(num) ? `${num.toFixed(2)}` : 'N/A';
@@ -10,10 +12,14 @@ function ProductCard({ product, onClick }) {
         <div
             className="card h-100 shadow-sm border-0 product-card"
             onClick={onClick}
-            style={{ cursor: 'pointer' }}
+            style={{
+                cursor: 'pointer',
+                backgroundColor: tenant.color_primary
+            }}
+
         >
             {product.image ? (
-                <div className="card-img-container">
+                <div className="card-img-container" >
                     <img
                         src={product.image}
                         className="card-img-top"

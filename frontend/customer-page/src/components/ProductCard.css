@@ -1,5 +1,5 @@
 .product-card {
-    background-color: transparent;
+    /* background-color: transparent; */
     transition: transform 0.2s ease;
 }
 
@@ -35,7 +35,7 @@
 }
 
 .card-body {
-    background-color: #f2ebdc;
+    /* background-color: #f2ebdc; */
     border-bottom-left-radius: 0.5rem;
     border-bottom-right-radius: 0.5rem;
     padding: 1rem;
@@ -46,7 +46,7 @@
 
 .card-img-container {
     padding: 12px;
-    background-color: #f2ebdc;
+    /* background-color: #f2ebdc; */
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
 }

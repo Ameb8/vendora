@@ -18,13 +18,13 @@
 }
 
 .cart-header {
-    background-color: #faf6ef;
+    /* background-color: #faf6ef; */
 }
 
 .cart-body {
     overflow-y: auto;
     flex-grow: 1;
-    background-color: #faf6ef;
+    /* background-color: #faf6ef; */
 }
 
 .cart-item {
