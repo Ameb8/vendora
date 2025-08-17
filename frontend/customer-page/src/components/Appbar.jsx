@@ -132,7 +132,7 @@ function Appbar() {
                             />
                         </div>
 
-                        <img src="/assets/candle_co_logo.png" alt="Logo" className="logo" />
+                        <img src={tenant.image_url} alt="Logo" className="logo" />
 
                         <div
                             className="cart-icon-wrapper position-relative"

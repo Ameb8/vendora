@@ -21,7 +21,7 @@ function ProductCard({ product, onClick }) {
             {product.image ? (
                 <div className="card-img-container" >
                     <img
-                        src={product.image}
+                        src={product.image_url}
                         className="card-img-top"
                         alt={product.name}
                         style={{ objectFit: 'cover', height: '380px', width: '100%' }}

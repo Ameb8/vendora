@@ -36,9 +36,9 @@ function ProductBuy({ product, onBack }) {
 
             <div className="d-flex flex-column flex-grow-1 gap-4" style={{ minHeight: 0 }}>
                 <div style={{ width: '100%' }}>
-                    {product.image ? (
+                    {product.image_url ? (
                         <img
-                            src={product.image}
+                            src={product.image_url}
                             alt={product.name}
                             style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
                         />

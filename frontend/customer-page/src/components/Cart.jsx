@@ -46,13 +46,13 @@ export default function Cart({ isOpen, onClose }) {
                         </div>
 
 
-                        {cart.map(({ id, name, price, quantity, image }) => (
+                        {cart.map(({ id, name, price, quantity, image_url }) => (
                             <div
                                 key={id}
                                 className="cart-item d-flex align-items-center px-2 py-2 border-top"
                             >
                                 <img
-                                    src={image}
+                                    src={image_url}
                                     alt={name}
                                     className="me-2"
                                     style={{ width: '40px', height: '40px', objectFit: 'cover' }}
