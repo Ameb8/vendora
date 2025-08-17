@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useTenant } from '../contexts/TenantContext.jsx';
 import ProductCard from './ProductCard';
 import ProductBuy from './ProductBuy';
 
-function ProductList({ tenant }) {
+function ProductList() {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredProducts, setFilteredProducts] = useState([]);
+    const { tenant } = useTenant();
 
     // Fetch products on mount or when tenant changes
     useEffect(() => {

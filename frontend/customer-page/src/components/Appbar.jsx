@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
+import { useTenant } from "../contexts/TenantContext.jsx"
 import './Appbar.css';
 import Cart from "./Cart.jsx";
 import { useCartUI } from "../contexts/CartUIContext.jsx";
@@ -17,6 +18,7 @@ function Appbar() {
     const [searchText, setSearchText] = useState("");
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const { setSearchQuery } = useContext(ProductContext);
+    const { tenant } = useTenant();
 
 
     const navigate = useNavigate();
@@ -82,7 +84,9 @@ function Appbar() {
     };
 
     return (
-        <>
+        <div
+            style={{ backgroundColor: tenant.color_primary }}
+        >
             <nav className="appbar d-flex align-items-center justify-content-between px-3">
                 {searchMode ? (
                     <div
@@ -123,7 +127,7 @@ function Appbar() {
                                 className="nav-icon left-icon"
                                 role="img"
                                 aria-label="Filter"
-                                style={{ width: '30px', height: '30px' }}
+                                style={{ width: '30px', height: '30px'}}
                                 onClick={() => setShowFilterMenu(prev => !prev)}
                             />
                         </div>
@@ -151,10 +155,14 @@ function Appbar() {
                 )}
             </nav>
             <Cart isOpen={cartOpen} onClose={closeCart} />
-            <div ref={filterRef} className={`filter-sidebar ${showFilterMenu ? 'open' : ''}`}>
+            <div
+                ref={filterRef}
+                className={`filter-sidebar ${showFilterMenu ? 'open' : ''}`}
+                style={{ backgroundColor: tenant.color_primary }}
+            >
                 <ShopBy  onClose={() => setShowFilterMenu(false)} />
             </div>
-        </>
+        </div>
     );
 }
 

@@ -13,6 +13,7 @@ import AdminRoot from './admin/src/AdminRoot.jsx'
 import HomePage from './components/HomePage.jsx';
 import './index.css'
 import { Toaster } from "react-hot-toast";
+import { TenantProvider } from "./contexts/TenantContext.jsx";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
@@ -28,7 +29,11 @@ createRoot(document.getElementById('root')).render(
                           <Routes>
                               <Route path="/" element={<HomePage />} />
                               <Route path="/admin/*" element={<AdminRoot />} />
-                              <Route path="/:slug/*" element={<App />} />
+                              <Route path="/:slug/*" element={
+                                  <TenantProvider>
+                                      <App />
+                                  </TenantProvider>
+                              } />
                           </Routes>
                       </CartUIProvider>
                   </CartProvider>

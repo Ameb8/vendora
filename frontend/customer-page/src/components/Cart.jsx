@@ -1,12 +1,13 @@
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { useTenant } from '../contexts/TenantContext';
 import './Cart.css';
 
 export default function Cart({ isOpen, onClose }) {
     const { cart, removeItem } = useCart();
     const navigate = useNavigate();
     const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
+    const { tenant } = useTenant();
 
     // Close cart and navigate to checkout
     const handleCheckoutClick = () => {
@@ -17,7 +18,7 @@ export default function Cart({ isOpen, onClose }) {
     return (
         <div
             className={`cart-slideout ${isOpen ? 'open' : ''}`}
-            style={{ backgroundColor: '#faf6ef' }}
+            style={{ backgroundColor: tenant.color_primary }}
         >
             <div className="cart-header d-flex justify-content-between align-items-center p-3 border-bottom">
                 <h5>Your Cart</h5>
