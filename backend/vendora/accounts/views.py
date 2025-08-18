@@ -6,23 +6,30 @@ from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.utils import timezone
+
 from rest_framework import viewsets, status, permissions
 from rest_framework.permissions import IsAdminUser, AllowAny
+
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
+
 from addresses.serializers import AddressSerializer
 from .models import AdminAccessRequest, UserAddress
 from .serializers import AdminAccessRequestSerializer, UserAddressSerializer
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def current_user(request):
     user = request.user
-    # Return whatever fields you want exposed to frontend
+
     return Response({
         'id': user.id,
         'username': user.username,
         'email': user.email,
         'is_staff': user.is_staff,
-        # Add any other fields you need here
     })
 
 class LoginView(APIView):

@@ -98,6 +98,7 @@ class IsTenantAdminOrReadOnly(BasePermission):
 
         # Check if user is admin or owner of the object's tenant
         tenant = getattr(obj, 'tenant', None)
+
         if not tenant:
             return False  # no tenant on object, deny
 

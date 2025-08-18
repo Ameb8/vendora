@@ -25,6 +25,14 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 
+    # Auth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+
     # 3rd-party extensions
     'corsheaders',
     'sslserver',
@@ -42,6 +50,7 @@ INSTALLED_APPS = [
     'payments',
     'subscriptions',
 ]
+SITE_ID = 1
 
 
 MIDDLEWARE = [
@@ -83,6 +92,19 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'APP': {
+            'client_id': os.getenv('GOOGLE_PUBLIC'),
+            'secret': os.getenv('GOOGLE_PRIVATE'),
+            'key': ''
+        }
+    }
+}
+
 
 STRIPE_SECRET_KEY = os.getenv('STRIPE_PRIVATE')
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC')

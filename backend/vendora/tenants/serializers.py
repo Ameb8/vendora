@@ -9,6 +9,8 @@ class TenantSerializer(serializers.ModelSerializer):
 
 
 class TenantPublicSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
     class Meta:
         model = Tenant
         fields = [
@@ -23,7 +25,11 @@ class TenantPublicSerializer(serializers.ModelSerializer):
             'phone',
             'address',
             'domain',
+            'image_url'
         ]
+
+    def get_image_url(self, obj):
+        return obj.image.url if obj.image else None
 
 class AdminAccessRequestSerializer(serializers.ModelSerializer):
     class Meta:
