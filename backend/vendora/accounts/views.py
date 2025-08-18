@@ -1,14 +1,16 @@
+from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth.models import User
+from django.utils import timezone
+
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
-from django.utils import timezone
-
 from rest_framework import viewsets, status, permissions
 from rest_framework.permissions import IsAdminUser, AllowAny
+
+import requests
 
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
@@ -17,8 +19,64 @@ from addresses.serializers import AddressSerializer
 from .models import AdminAccessRequest, UserAddress
 from .serializers import AdminAccessRequestSerializer, UserAddressSerializer
 
+
+class GoogleLogin(APIView):
+    def post(self, request):
+        id_token = request.data.get('id_token')
+
+        if not id_token:
+            return Response({'error': 'Missing id_token'}, status=400)
+
+        # Verify token with Google
+        response = requests.get(f'https://oauth2.googleapis.com/tokeninfo?id_token={id_token}')
+        if response.status_code != 200:
+            return Response({'error': 'Invalid ID token'}, status=400)
+
+        data = response.json()
+        email = data.get('email')
+
+        if not email:
+            return Response({'error': 'No email in token'}, status=400)
+
+        # Get or create the user
+        User = get_user_model()
+        user, created = User.objects.get_or_create(email=email, defaults={'username': email})
+
+        token, _ = Token.objects.get_or_create(user=user)
+
+        return Response({'key': token.key})
+
+'''
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
+'''
+
+class GoogleIDTokenLogin(APIView):
+    def post(self, request):
+        id_token = request.data.get('id_token')
+
+        if not id_token:
+            return Response({'error': 'Missing id_token'}, status=400)
+
+        # Verify token with Google
+        response = requests.get(f'https://oauth2.googleapis.com/tokeninfo?id_token={id_token}')
+        if response.status_code != 200:
+            return Response({'error': 'Invalid ID token'}, status=400)
+
+        data = response.json()
+        email = data.get('email')
+
+        if not email:
+            return Response({'error': 'No email in token'}, status=400)
+
+        # Get or create the user
+        User = get_user_model()
+        user, created = User.objects.get_or_create(email=email, defaults={'username': email})
+
+        token, _ = Token.objects.get_or_create(user=user)
+
+        return Response({'key': token.key})
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
