@@ -7,7 +7,8 @@ from .views import (
     AdminAccessRequestView,
     AdminAccessApprovalView,
     UserAddressViewSet,
-    GoogleLogin
+    GoogleLogin,
+    RegisterUser
 )
 
 router = DefaultRouter()
@@ -15,6 +16,7 @@ router.register(r'my-addresses', UserAddressViewSet, basename='my-addresses')
 urlpatterns = [
     path('me/', current_user, name='current_user'),
     path('login/', LoginView.as_view(), name='login'),
+    path('register/', RegisterUser.as_view(), name='register'),
     path('register-admin/', RegisterAdminView.as_view(), name='register-admin'),
     path('request-admin/', AdminAccessRequestView.as_view(), name='request-admin'),
     path('review-admin-requests/', AdminAccessApprovalView.as_view(), name='review-admin-requests'),

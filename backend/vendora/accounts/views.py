@@ -46,38 +46,6 @@ class GoogleLogin(APIView):
 
         return Response({'key': token.key})
 
-'''
-class GoogleLogin(SocialLoginView):
-    adapter_class = GoogleOAuth2Adapter
-'''
-
-class GoogleIDTokenLogin(APIView):
-    def post(self, request):
-        id_token = request.data.get('id_token')
-
-        if not id_token:
-            return Response({'error': 'Missing id_token'}, status=400)
-
-        # Verify token with Google
-        response = requests.get(f'https://oauth2.googleapis.com/tokeninfo?id_token={id_token}')
-        if response.status_code != 200:
-            return Response({'error': 'Invalid ID token'}, status=400)
-
-        data = response.json()
-        email = data.get('email')
-
-        if not email:
-            return Response({'error': 'No email in token'}, status=400)
-
-        # Get or create the user
-        User = get_user_model()
-        user, created = User.objects.get_or_create(email=email, defaults={'username': email})
-
-        token, _ = Token.objects.get_or_create(user=user)
-
-        return Response({'key': token.key})
-
-
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def current_user(request):
@@ -99,12 +67,35 @@ class LoginView(APIView):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            if not user.is_staff:
-                return Response({'error': 'Admin access only.'}, status=status.HTTP_403_FORBIDDEN)
-
             token, _ = Token.objects.get_or_create(user=user)
+
             return Response({'token': token.key, 'is_staff': user.is_staff})
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class RegisterUser(APIView):
+    permission_classes = [AllowAny]  # Anyone can register
+
+    def post(self, request):
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if not username or not password:
+            return Response({'error': 'Username and password are required'}, status=400)
+
+        if User.objects.filter(username=username).exists():
+            return Response({'error': 'Username already taken'}, status=400)
+
+        user = User.objects.create_user(username=username, email=email, password=password, is_staff=False)
+        token = Token.objects.create(user=user)
+
+        return Response({
+            'message': 'User created',
+            'token': token.key,
+            'username': user.username,
+            'email': user.email,
+            'is_staff': user.is_staff,
+        })
 
 class RegisterAdminView(APIView):
     permission_classes = [IsAdminUser]  # Only current admins can create new admins
