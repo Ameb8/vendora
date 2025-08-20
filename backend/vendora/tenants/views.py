@@ -4,10 +4,12 @@ from django.utils import timezone
 from rest_framework import viewsets, status, generics, permissions
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
+
+import stripe
 
 from .models import Tenant, TenantAdmin, AdminAccessRequest
 from .serializers import TenantSerializer, TenantPublicSerializer, AdminAccessRequestSerializer
@@ -144,5 +146,48 @@ class MyTenantView(generics.ListAPIView):
             models.Q(admin_links__user=user)
         ).distinct()
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def link_stripe(request, slug):
+    try:
+        tenant = Tenant.objects.get(slug=slug)
 
+        # Ensure only the owner or admin can access
+        if not tenant.has_admin_privilege(request.user):
+            return Response({"detail": "Permission denied."}, status=status.HTTP_403_FORBIDDEN)
+
+        onboarding_url = tenant.link_stripe_account()
+        return Response({"url": onboarding_url})
+
+    except Tenant.DoesNotExist:
+        return Response({"detail": "Tenant not found."}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# views.py
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def stripe_status(request, slug):
+    try:
+        tenant = Tenant.objects.get(slug=slug)
+
+        if not tenant.has_admin_privilege(request.user):
+            return Response({"detail": "Permission denied"}, status=403)
+
+        if not tenant.stripe_account_id:
+            return Response({"detail": "No Stripe account connected"}, status=400)
+
+        account = stripe.Account.retrieve(tenant.stripe_account_id)
+
+        return Response({
+            "charges_enabled": account.charges_enabled,
+            "payouts_enabled": account.payouts_enabled,
+            "details_submitted": account.details_submitted,
+        })
+
+    except Tenant.DoesNotExist:
+        return Response({"detail": "Tenant not found"}, status=404)
+    except Exception as e:
+        return Response({"detail": str(e)}, status=500)
 

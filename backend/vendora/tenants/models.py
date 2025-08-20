@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from cloudinary.models import CloudinaryField
+import stripe
 
 class Tenant(models.Model):
     # Unique identifier (e.g. used in subdomains or API keys)
@@ -62,6 +63,29 @@ class Tenant(models.Model):
             return True
         return TenantAdmin.objects.filter(tenant=self, user=user).exists()
 
+    def link_stripe_account(self):
+        if not self.stripe_account_id: # Create stripe account
+            account = stripe.Account.create(
+                type="express",
+                email=self.email,
+                capabilities={
+                    "card_payments": {"requested": True},
+                    "transfers": {"requested": True},
+                }
+            )
+            self.stripe_account_id = account.id
+            self.save()
+        else:
+            account = stripe.Account.retrieve(self.stripe_account_id)
+
+            # Create onboarding link
+        account_link = stripe.AccountLink.create(
+            account=account.id,
+            refresh_url="https://localhost:5173/admin/stripe/retry",
+            return_url="https://localhost:5173/admin/stripe/connected",
+            type="account_onboarding"
+        )
+        return account_link.url
 
 class TenantAdmin(models.Model):
     tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name='admin_links')

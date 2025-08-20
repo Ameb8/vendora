@@ -14,5 +14,7 @@ urlpatterns = [
     path('public/', views.PublicTenantDetailView.as_view(), name='tenant-list'),
     path('public/<slug:slug>', views.PublicTenantDetailView.as_view(), name='tenant-public'),
     path('my-tenants/', views.MyTenantView.as_view(), name='my-tenants'),
+    path('<slug:slug>/stripe/onboard/', views.link_stripe, name='stripe-onboard'),
+    path('<slug:slug>/stripe/status', views.stripe_status, name='stripe-status'),
 ] + router.urls
 
