@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
+import { useTenant } from './TenantContext.jsx'
 
 export const ProductContext = createContext();
 
@@ -10,10 +11,13 @@ export function ProductProvider({ children }) {
     const [minPrice, setMinPrice] = useState(null);
     const [maxPrice, setMaxPrice] = useState(null);
     const [searchQuery, setSearchQuery] = useState('');
+    const { tenant } = useTenant();
 
     // Generate full URL with category and price filters
     const buildUrl = () => {
         const queryParams = [];
+
+        queryParams.push(`tenant__slug=${tenant.slug}`)
 
         if (categories.length > 0) {
             categories.forEach(cat => {
@@ -40,7 +44,10 @@ export function ProductProvider({ children }) {
     const fetchProducts = useCallback(async () => {
         setLoading(true);
         try {
-            const response = await fetch(buildUrl());
+            const url = buildUrl()
+            console.log(`Filter URL: ${url}`);
+
+            const response = await fetch(url);
             const data = await response.json();
             setProducts(data);
         } catch (err) {

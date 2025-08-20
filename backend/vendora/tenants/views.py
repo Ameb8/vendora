@@ -9,12 +9,16 @@ from rest_framework.exceptions import NotAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import RetrieveAPIView
 
+import traceback
+import logging
 import stripe
 
 from .models import Tenant, TenantAdmin, AdminAccessRequest
 from .serializers import TenantSerializer, TenantPublicSerializer, AdminAccessRequestSerializer
 from .permissions import IsTenantAdmin, IsTenantAdminForAccessRequest
 
+
+logger = logging.getLogger(__name__)
 
 class TenantViewSet(viewsets.ModelViewSet):
     queryset = Tenant.objects.all()
@@ -162,6 +166,8 @@ def link_stripe(request, slug):
     except Tenant.DoesNotExist:
         return Response({"detail": "Tenant not found."}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
+        traceback.print_exc()
+        logger.exception("Stripe onboarding failed")
         return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

@@ -81,8 +81,8 @@ class Tenant(models.Model):
             # Create onboarding link
         account_link = stripe.AccountLink.create(
             account=account.id,
-            refresh_url="https://localhost:5173/admin/stripe/retry",
-            return_url="https://localhost:5173/admin/stripe/connected",
+            refresh_url="http://localhost:5173/admin/stripe/retry",
+            return_url="http://localhost:5173/admin/stripe/success",
             type="account_onboarding"
         )
         return account_link.url

@@ -18,7 +18,7 @@ function ProductCard({ product, onClick }) {
             }}
 
         >
-            {product.image ? (
+            {product.image_url ? (
                 <div className="card-img-container" >
                     <img
                         src={product.image_url}

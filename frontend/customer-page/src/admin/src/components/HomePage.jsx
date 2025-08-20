@@ -8,6 +8,8 @@ import AdminRegisterForm from "./AdminRegisterForm.jsx";
 import CreateProductForm from "./CreateProduct.jsx";
 import OrderNotifications from "./OrderNotifications.jsx";
 import MetricsDashboard from "./MetricsDashboard.jsx";
+import ManageStripe from "../stripe/ManageStripe.jsx";
+import ManageSubscriptions from "./ManageSubscriptions.jsx";
 import { TenantProvider, useTenant } from '../contexts/TenantContext';
 import SelectTenant from './SelectTenant';
 import TenantDropdown from "./TenantDropdown.jsx";
@@ -29,6 +31,8 @@ function HomeContent() {
                 <Route path="create-product" element={<CreateProductForm />} />
                 <Route path="order-notifications" element={<OrderNotifications />} />
                 <Route path="metrics" element={<MetricsDashboard />} />
+                <Route path="stripe/*" element={<ManageStripe />} />
+                <Route path="subscriptions/*" element={<ManageSubscription />} />
             </Routes>
         </div>
     );

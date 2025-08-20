@@ -44,42 +44,49 @@ function Navbar() {
                     }}>
                         🏠 Product List
                     </button>
+
                     <button className="btn btn-outline-light text-start" onClick={() => {
                         navigate('orders');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         📦 Paid Orders
                     </button>
+
                     <button className="btn btn-outline-light text-start" onClick={() => {
                         navigate('about');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         📝 Update About
                     </button>
+
                     <button className="btn btn-outline-light text-start" onClick={() => {
                         navigate('contact');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         📞 Update Contact
                     </button>
+
                     <button className="btn btn-outline-light text-start" onClick={() => {
                         navigate('create-user');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         👤 Create Admin Account
                     </button>
+
                     <button className="btn btn-outline-light text-start" onClick={() => {
                         navigate('create-product');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         ➕ Create New Product
                     </button>
+
                     <button className="btn btn-outline-light text-start" onClick={() => {
                         navigate('order-notifications');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
                         🔔 Manage Order Alerts
                     </button>
+
                     <button className="btn btn-outline-light text-start" onClick={() => {
                         navigate('metrics');
                         document.querySelector('#offcanvasMenu .btn-close').click();
@@ -87,6 +94,19 @@ function Navbar() {
                         📊 Business Metrics
                     </button>
 
+                    <button className="btn btn-outline-light text-start" onClick={() => {
+                        navigate('stripe');
+                        document.querySelector('#offcanvasMenu .btn-close').click();
+                    }}>
+                        🔌 Connect Payments
+                    </button>
+
+                    <button className="btn btn-outline-light text-start" onClick={() => {
+                        navigate('subscriptions');
+                        document.querySelector('#offcanvasMenu .btn-close').click();
+                    }}>
+                        🔌 Manage Subscriptions
+                    </button>
                 </div>
             </div>
         </>

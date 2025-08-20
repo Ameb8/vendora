@@ -28,9 +28,9 @@ function ProductCard({ product, onEditClick, onDeleteClick }) {
                 🗑️
             </button>
 
-            {product.image ? (
+            {product.image_url ? (
                 <img
-                    src={product.image}
+                    src={product.image_url}
                     className="card-img-top"
                     alt={product.name}
                     style={{ objectFit: 'cover'}}

@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
+from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ import stripe
 
 from tenants.models import Tenant
 from .models import Subscription, SubscriptionPlan
+from .serializers import SubscriptionPlanSerializer
 
 
 @api_view(['POST'])
@@ -82,3 +84,10 @@ def stripe_webhook(request):
 
     return Response(status=200)
 
+
+class SubscriptionPlanListView(generics.ListAPIView):
+    serializer_class = SubscriptionPlanSerializer
+
+    def get_queryset(self):
+        # Only return active plans
+        return SubscriptionPlan.objects.filter(active=True)
