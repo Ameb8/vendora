@@ -19,7 +19,7 @@ class Subscription(models.Model):
     stripe_subscription_id = models.CharField(max_length=100, blank=True, null=True)
     plan = models.ForeignKey(SubscriptionPlan, on_delete=models.SET_NULL, null=True)
     current_period_end = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=50, default='inactive')  # active, canceled, etc.
+    status = models.CharField(max_length=50, default='inactive')
 
     def __str__(self):
         return f"{self.tenant}'s subscription"

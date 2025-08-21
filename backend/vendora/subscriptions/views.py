@@ -11,7 +11,7 @@ import stripe
 
 from tenants.models import Tenant
 from .models import Subscription, SubscriptionPlan
-from .serializers import SubscriptionPlanSerializer
+from .serializers import SubscriptionSerializer, SubscriptionPlanSerializer
 
 
 @api_view(['POST'])
@@ -91,3 +91,21 @@ class SubscriptionPlanListView(generics.ListAPIView):
     def get_queryset(self):
         # Only return active plans
         return SubscriptionPlan.objects.filter(active=True)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_current_subscription(request):
+    tenant = request.user.tenant
+
+    # grab latest subscription for tenant
+    subscription = (
+        Subscription.objects.filter(tenant=tenant)
+        .order_by("-current_period_end")
+        .first()
+    )
+
+    if subscription and subscription.is_active:
+        return Response(SubscriptionSerializer(subscription).data)
+    return Response(None)
+
+

@@ -9,7 +9,7 @@ import CreateProductForm from "./CreateProduct.jsx";
 import OrderNotifications from "./OrderNotifications.jsx";
 import MetricsDashboard from "./MetricsDashboard.jsx";
 import ManageStripe from "../stripe/ManageStripe.jsx";
-import ManageSubscriptions from "./ManageSubscriptions.jsx";
+import ManageSubscription from "../subscriptions/ManageSubscription.jsx";
 import { TenantProvider, useTenant } from '../contexts/TenantContext';
 import SelectTenant from './SelectTenant';
 import TenantDropdown from "./TenantDropdown.jsx";
