@@ -9,6 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key")
 
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+
 INSTALLED_APPS = [
     # Django built-in apps
     'django.contrib.admin',

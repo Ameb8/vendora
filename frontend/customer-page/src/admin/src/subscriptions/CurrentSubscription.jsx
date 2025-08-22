@@ -16,11 +16,11 @@ const CurrentSubscription = () => {
                 setLoading(true);
                 setError(null);
 
-                const res = await fetch(`${import.meta.env.VITE_API_URL}/subscriptions/current/`, {
+                const res = await fetch(`${import.meta.env.VITE_API_URL}/subscriptions/current/${currentTenant.slug}/`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("access")}`, // assumes JWT auth
+                        Authorization: `Token ${localStorage.getItem("token")}`,
                     },
                 });
 

@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { Button, Spinner, Card, Row, Col, Container } from "react-bootstrap";
+import { useTenant } from "../contexts/TenantContext.jsx";
 
 export default function SubscriptionPlans() {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedPlan, setSelectedPlan] = useState(null);
+    const [subscribing, setSubscribing] = useState(false);
+    const { currentTenant, loading: tenantLoading } = useTenant();
 
     useEffect(() => {
         const fetchPlans = async () => {
@@ -12,6 +15,7 @@ export default function SubscriptionPlans() {
                 const response = await fetch(
                     `${import.meta.env.VITE_API_URL}/subscriptions/plans/`
                 );
+
                 if (!response.ok) throw new Error("Failed to load subscription plans");
                 const data = await response.json();
                 setPlans(data);
@@ -26,10 +30,37 @@ export default function SubscriptionPlans() {
 
     const handleSelectPlan = (plan) => {
         setSelectedPlan(plan);
-        console.log("Selected plan:", plan);
     };
 
-    if (loading) {
+    const handleSubscribe = async () => {
+        if (!selectedPlan) return;
+        setSubscribing(true);
+
+        try {
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/subscriptions/create-checkout-session/`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Token ${token}`,
+                    },
+                    body: JSON.stringify({ plan_id: selectedPlan.id }),
+                }
+            );
+
+            if (!response.ok) throw new Error("Failed to create checkout session");
+            const data = await response.json();
+
+            // Redirect to Stripe Checkout
+            window.location.href = data.checkout_url;
+        } catch (err) {
+            console.error("Error creating checkout session:", err);
+            setSubscribing(false);
+        }
+    };
+
+    if (loading || tenantLoading) {
         return (
             <div className="d-flex justify-content-center p-4">
                 <Spinner animation="border" />

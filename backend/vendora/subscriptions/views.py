@@ -1,7 +1,9 @@
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
 
 from rest_framework import generics
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -9,6 +11,7 @@ from rest_framework.response import Response
 from datetime import datetime
 import stripe
 
+from vendora.permissions import IsTenantAdminOrReadOnly
 from tenants.models import Tenant
 from .models import Subscription, SubscriptionPlan
 from .serializers import SubscriptionSerializer, SubscriptionPlanSerializer
@@ -92,6 +95,7 @@ class SubscriptionPlanListView(generics.ListAPIView):
         # Only return active plans
         return SubscriptionPlan.objects.filter(active=True)
 
+'''
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_current_subscription(request):
@@ -107,5 +111,14 @@ def get_current_subscription(request):
     if subscription and subscription.is_active:
         return Response(SubscriptionSerializer(subscription).data)
     return Response(None)
+'''
 
+class CurrentSubscriptionView(RetrieveAPIView):
+    queryset = Subscription.objects.all()
+    permission_classes = [IsTenantAdminOrReadOnly]
+    serializer_class = SubscriptionSerializer  # You need to define this
 
+    def get_object(self):
+        slug = self.kwargs["slug"]
+        tenant = get_object_or_404(Tenant, slug=slug)
+        return Subscription.objects.filter(tenant=tenant).order_by("-current_period_end").first()
