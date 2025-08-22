@@ -5,6 +5,7 @@ services:
       context: ./backend/vendora
     env_file:
       - ./backend/vendora/.env
+      - ./stripe/webhook.env
     ports:
       - "8000:8000"
     volumes:
@@ -34,6 +35,36 @@ services:
     command: npm run dev -- --host --port 5173
     env_file:
       - ./frontend/customer-page/.env
+
+  stripe-cli:
+    profiles: ["dev"]
+    image: stripe/stripe-cli:latest
+    container_name: stripe-cli
+    env_file:
+      - ./backend/vendora/.env
+    volumes:
+      - ./start_stripe.sh:/app/start_stripe.sh
+      - ./stripe:/app/stripe
+    working_dir: /app
+    entrypoint: ["/bin/sh", "start_stripe.sh"]
+    depends_on:
+      - backend_dev
+
+
+#  stripe-cli:
+#    profiles: ["dev"]
+#    image: alpine:3.18
+#    container_name: stripe-cli
+#    env_file:
+#      - ./backend/vendora/.env
+#    volumes:
+#      - ./start_stripe.sh:/app/start_stripe.sh
+#      - ./stripe:/app/stripe
+#    working_dir: /app
+#    command: ["/bin/sh", "start_stripe.sh"]
+#    tty: true
+#    depends_on:
+#      - backend_dev
 
   admin-portal:
     profiles: ["legacy"]

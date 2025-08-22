@@ -40,8 +40,8 @@ def create_checkout_session(request):
             'quantity': 1,
         }],
         mode='subscription',
-        success_url=settings.FRONTEND_URL + '/success?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url=settings.FRONTEND_URL + '/cancelled',
+        success_url=f'{settings.FRONTEND_URL}/admin/subscriptions/success',
+        cancel_url=f'{settings.FRONTEND_URL}/admin/subscriptions/cancel'
     )
 
     return Response({'checkout_url': session.url})
