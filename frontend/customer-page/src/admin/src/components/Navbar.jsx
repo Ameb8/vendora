@@ -105,7 +105,7 @@ function Navbar() {
                         navigate('subscriptions');
                         document.querySelector('#offcanvasMenu .btn-close').click();
                     }}>
-                        🔌 Manage Subscriptions
+                        🛒 Manage Subscriptions
                     </button>
                 </div>
             </div>

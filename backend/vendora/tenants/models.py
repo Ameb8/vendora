@@ -15,6 +15,7 @@ class Tenant(models.Model):
     # Administrative info
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tenants")
     stripe_account_id = models.CharField(max_length=255, blank=True, null=True)
+    stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
 
     # Branding / appearance
     image = CloudinaryField('image', folder='products', null=True, blank=True)

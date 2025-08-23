@@ -50,22 +50,6 @@ services:
     depends_on:
       - backend_dev
 
-
-#  stripe-cli:
-#    profiles: ["dev"]
-#    image: alpine:3.18
-#    container_name: stripe-cli
-#    env_file:
-#      - ./backend/vendora/.env
-#    volumes:
-#      - ./start_stripe.sh:/app/start_stripe.sh
-#      - ./stripe:/app/stripe
-#    working_dir: /app
-#    command: ["/bin/sh", "start_stripe.sh"]
-#    tty: true
-#    depends_on:
-#      - backend_dev
-
   admin-portal:
     profiles: ["legacy"]
     container_name: admin-portal-dev
@@ -93,4 +77,5 @@ services:
     volumes:
       - ./backend/vendora:/app
     command: python manage.py test
+
 

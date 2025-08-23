@@ -18,12 +18,24 @@ from .serializers import SubscriptionSerializer, SubscriptionPlanSerializer
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsTenantAdminOrReadOnly])
 def create_checkout_session(request):
-    tenant = request.user.tenant
+    tenant_id = request.data.get('tenant_id')
+
+    if not tenant_id: # Invalid tenant id
+        return Response({"detail": "Missing tenant_slug."}, status=400)
+
+    try: # Get tenant
+        tenant = Tenant.objects.get(id=tenant_id)
+    except Tenant.DoesNotExist:
+        return Response({"detail": "Tenant not found."}, status=404)
+
     plan_id = request.data.get('plan_id')
 
-    plan = SubscriptionPlan.objects.get(id=plan_id)
+    try: # Get subscription plan
+        plan = SubscriptionPlan.objects.get(id=plan_id)
+    except SubscriptionPlan.DoesNotExist:
+        return Response({"detail": "Subscription plan not found."}, status=404)
 
     if not tenant.stripe_customer_id:
         customer = stripe.Customer.create(email=request.user.email)
