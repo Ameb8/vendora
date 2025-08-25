@@ -1,11 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
+import { useTenant } from '../contexts/TenantContext.jsx'
 
 export default function AboutUsOverlayCarousel() {
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
     const [images, setImages] = useState([]);
     const carouselRef = useRef(null);
-    const baseURL = `${import.meta.env.VITE_API_URL}/design`;
+    const baseURL = `${import.meta.env.VITE_API_URL}/designs`;
+    const { tenant } = useTenant();
 
     const touchStartX = useRef(0);
     const touchEndX = useRef(0);
@@ -14,13 +16,13 @@ export default function AboutUsOverlayCarousel() {
         async function fetchContent() {
             try {
                 // Fetch header/body text
-                const textRes = await fetch(`${baseURL}/page-text`);
+                const textRes = await fetch(`${baseURL}/page-text/?tenant__slug=${tenant.slug}`);
                 const textData = await textRes.json();
                 setTitle(textData.about_us_title);
                 setBody(textData.about_us_body);
 
                 // Fetch images
-                const imgRes = await fetch(`${baseURL}/image-in-list/?list_name=about`, {
+                const imgRes = await fetch(`${baseURL}/image-in-list/?list_name=about&tenant__slug=${tenant.slug}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
