@@ -1,23 +1,25 @@
 import { useEffect, useState, useRef } from 'react';
+import { useTenant } from "../contexts/TenantContext.jsx";
 
 export default function ContactOverlayCarousel() {
     const [contactNum, setContactNum] = useState('');
     const [contactMail, setContactMail] = useState('');
     const [images, setImages] = useState([]);
     const carouselRef = useRef(null);
-    const baseURL = `${import.meta.env.VITE_API_URL}/design`;
+    const baseURL = `${import.meta.env.VITE_API_URL}/designs`;
+    const { tenant } = useTenant();
 
     useEffect(() => {
         async function fetchContent() {
             try {
                 // Fetch contact information
-                const textRes = await fetch(`${baseURL}/page-text`);
+                const textRes = await fetch(`${baseURL}/page-text/?tenant__slug=${tenant.slug}`);
                 const textData = await textRes.json();
                 setContactNum(textData.contact_num);
                 setContactMail(textData.contact_mail);
 
                 // Fetch contact images
-                const imgRes = await fetch(`${baseURL}/image-in-list/?list_name=contact`, {
+                const imgRes = await fetch(`${baseURL}/image-in-list/?list_name=contact&tenant__slug=${tenant.slug}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
