@@ -9,6 +9,9 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from datetime import datetime
+import logging
+import json
+
 import stripe
 
 from vendora.permissions import IsTenantAdminOrReadOnly
@@ -16,6 +19,8 @@ from tenants.models import Tenant
 from .models import Subscription, SubscriptionPlan
 from .serializers import SubscriptionSerializer, SubscriptionPlanSerializer
 
+
+logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated, IsTenantAdminOrReadOnly])
@@ -42,7 +47,14 @@ def create_checkout_session(request):
         tenant.stripe_customer_id = customer.id
         tenant.save()
     else:
-        customer = stripe.Customer.retrieve(tenant.stripe_customer_id)
+        try:
+            # Try to reuse existing customer
+            customer = stripe.Customer.retrieve(tenant.stripe_customer_id)
+        except stripe.error.InvalidRequestError:
+            # ID is stale or deleted — create a fresh one
+            customer = stripe.Customer.create(email=request.user.email)
+            tenant.stripe_customer_id = customer.id
+            tenant.save()
 
     session = stripe.checkout.Session.create(
         customer=customer.id,
@@ -58,6 +70,7 @@ def create_checkout_session(request):
 
     return Response({'checkout_url': session.url})
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 @csrf_exempt
@@ -72,6 +85,10 @@ def stripe_webhook(request):
         )
     except Exception:
         return Response(status=400)
+
+    # DEBUG *******
+    logger.warning("\n\n\n\n📦 Stripe Event Payload:\n%s", json.dumps(event, indent=2))
+    # END DEBUG ***
 
     if event['type'] == 'customer.subscription.created':
         sub_data = event['data']['object']

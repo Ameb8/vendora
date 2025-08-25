@@ -43,10 +43,10 @@ services:
     env_file:
       - ./backend/vendora/.env
     volumes:
-      - ./start_stripe.sh:/app/start_stripe.sh
+      - ./run_stripe.sh:/app/run_stripe.sh
       - ./stripe:/app/stripe
     working_dir: /app
-    entrypoint: ["/bin/sh", "start_stripe.sh"]
+    entrypoint: ["/bin/sh", "run_stripe.sh"]
     depends_on:
       - backend_dev
 
