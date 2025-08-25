@@ -13,7 +13,7 @@ export default function UpdateAbout() {
         e.preventDefault();
 
         // Get user and token
-        const url = `${import.meta.env.VITE_API_URL}/design/page-text/update_text/`;
+        const url = `${import.meta.env.VITE_API_URL}/designs/page-text/update_text/`;
         const token = user?.token || localStorage.getItem('token');
 
         try { // Attempt API call
