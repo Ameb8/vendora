@@ -1,13 +1,20 @@
-from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import Max, F
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.http import require_POST
+
+from rest_framework import viewsets, permissions, status
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+
+from vendora.permissions import IsTenantAdminOrReadOnly
+from tenants.models import Tenant
+
 # from .permissions import IsAdminOrReadOnly
 from .models import PageDesign, DesignImage, ImageList, ImageInList
 from .serializers import (
@@ -16,6 +23,30 @@ from .serializers import (
     ImageInListCreateSerializer
 )
 
+
+class PageDesignViewSet(ModelViewSet):
+    serializer_class = PageDesignSerializer
+    permission_classes = [IsTenantAdminOrReadOnly]
+    queryset = PageDesign.objects.select_related('tenant')
+
+    def get_object(self):
+        tenant_slug = self.kwargs.get('tenant_slug')
+        try:
+            return PageDesign.objects.get(tenant__slug=tenant_slug)
+        except PageDesign.DoesNotExist:
+            raise NotFound('PageDesign not found for this tenant.')
+
+    def create(self, request, *args, **kwargs):
+        # Optional: auto-inject tenant if tenant_slug in URL
+        tenant_slug = self.kwargs.get('tenant_slug')
+        if tenant_slug:
+            try:
+                tenant = Tenant.objects.get(slug=tenant_slug)
+            except Tenant.DoesNotExist:
+                return Response({'detail': 'Tenant not found'}, status=400)
+
+            request.data['tenant'] = tenant.id
+        return super().create(request, *args, **kwargs)
 
 
 class IsStaffOrReadOnly(permissions.BasePermission):

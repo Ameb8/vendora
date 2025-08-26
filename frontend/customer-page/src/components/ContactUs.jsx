@@ -13,7 +13,8 @@ export default function ContactOverlayCarousel() {
         async function fetchContent() {
             try {
                 // Fetch contact information
-                const textRes = await fetch(`${baseURL}/page-text/?tenant__slug=${tenant.slug}`);
+                // const textRes = await fetch(`${baseURL}/page-text/?tenant__slug=${tenant.slug}`);
+                const textRes = await fetch(`${baseURL}/page/${tenant.slug}/`);
                 const textData = await textRes.json();
                 setContactNum(textData.contact_num);
                 setContactMail(textData.contact_mail);

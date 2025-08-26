@@ -4,7 +4,7 @@ from cloudinary.models import CloudinaryField
 from tenants.models import Tenant
 
 class PageDesign(models.Model):
-    tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE)
+    tenant = models.OneToOneField(Tenant, on_delete=models.CASCADE)
     about_us_title = models.CharField(max_length=50)
     about_us_body = models.CharField(max_length=500)
     contact_num = models.CharField(max_length=20)
