@@ -16,6 +16,6 @@ pagedesign_view = views.PageDesignViewSet.as_view({
 
 urlpatterns = [
     path('', include(router.urls)),
-path('page/<slug:tenant_slug>/', pagedesign_view, name='tenant-pagedesign')
+    path('page/<slug:tenant_slug>/', pagedesign_view, name='tenant-pagedesign')
 ]
 

@@ -1,19 +1,24 @@
 import { useState } from 'react';
 import ImageUpload from './ImageUpload';
 import { useUser } from "../contexts/UserContext.jsx";
+import { useTenant } from "../contexts/TenantContext.jsx";
 import ImageManager from "./ImageManager";
 
 export default function UpdateAbout() {
     const [header, setHeader] = useState('');
     const [body, setBody] = useState('');
     const { user } = useUser();
+    const { currentTenant, loading } = useTenant();
     const imgURL = `${import.meta.env.VITE_API_URL}/design/image-in-list/`
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        console.log(`\n\nTenant:\n\n${currentTenant}\n\n`)// DEBUG *****
+
         // Get user and token
-        const url = `${import.meta.env.VITE_API_URL}/designs/page-text/update_text/`;
+        // const url = `${import.meta.env.VITE_API_URL}/designs/page-text/update_text/`;
+        const url = `${import.meta.env.VITE_API_URL}/designs/page/${currentTenant.slug}/`;
         const token = user?.token || localStorage.getItem('token');
 
         try { // Attempt API call
