@@ -111,6 +111,7 @@ function CreateProductForm() {
             <label>
                 Product Name:
                 <input
+                    className="shepherd-product-name"
                     type="text"
                     name="name"
                     value={formData.name}
@@ -124,6 +125,7 @@ function CreateProductForm() {
             <label>
                 Category:
                 <input
+                    className="shepherd-product-category"
                     type="text"
                     name="category"
                     value={formData.category}
@@ -137,6 +139,7 @@ function CreateProductForm() {
             <label>
                 Description:
                 <textarea
+                    className="shepherd-product-description"
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
@@ -149,6 +152,7 @@ function CreateProductForm() {
             <label>
                 Price:
                 <input
+                    className="shepherd-product-price"
                     type="number"
                     name="price"
                     value={formData.price}
@@ -164,6 +168,7 @@ function CreateProductForm() {
             <label>
                 Product Image:
                 <input
+                    className="shepherd-product-image"
                     type="file"
                     accept="image/*"
                     onChange={handleImageChange}
@@ -178,6 +183,7 @@ function CreateProductForm() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <button type="button" onClick={decrementAmount}>-</button>
                     <input
+                        className="shepherd-product-quantity"
                         type="number"
                         name="amount"
                         value={formData.amount}
@@ -191,7 +197,12 @@ function CreateProductForm() {
 
             <br /><br />
 
-            <button type="submit">Create Product</button>
+            <button
+                className="shepherd-product-submit"
+                type="submit"
+            >
+                Create Product
+            </button>
         </form>
     );
 }

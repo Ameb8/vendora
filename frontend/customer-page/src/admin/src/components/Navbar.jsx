@@ -107,6 +107,13 @@ function Navbar() {
                     }}>
                         🛒 Manage Subscriptions
                     </button>
+
+                    <button className="btn btn-outline-light text-start" onClick={() => {
+                        navigate('tutorials');
+                        document.querySelector('#offcanvasMenu .btn-close').click();
+                    }}>
+                        📚 Tutorials
+                    </button>
                 </div>
             </div>
         </>
