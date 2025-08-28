@@ -58,7 +58,7 @@ export function getCreateProductTutorialSteps(tour) {
         {
             id: 'step-quantity',
             text: 'Use these buttons to adjust the quantity.',
-            attachTo: { element: '.shepherd-increment', on: 'top' },
+            attachTo: { element: '.shepherd-product-quantity', on: 'top' },
             buttons: [
                 {
                     text: 'Next',
@@ -66,6 +66,7 @@ export function getCreateProductTutorialSteps(tour) {
                 }
             ]
         },
+        /*
         {
             id: 'step-submit',
             text: 'Click here to submit the product.',
@@ -79,6 +80,14 @@ export function getCreateProductTutorialSteps(tour) {
                     }
                 }
             ]
+        },
+        */
+        {
+            id: 'step-submit',
+            text: 'Click the "Create Product" button to submit your product.',
+            attachTo: { element: '.shepherd-product-submit', on: 'top' },
+            advanceOn: { selector: '.shepherd-product-submit', event: 'click' },
+            buttons: [] // Don't render custom buttons
         },
         {
             id: 'step-complete',
