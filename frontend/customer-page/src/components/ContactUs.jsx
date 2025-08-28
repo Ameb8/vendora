@@ -20,7 +20,8 @@ export default function ContactOverlayCarousel() {
                 setContactMail(textData.contact_mail);
 
                 // Fetch contact images
-                const imgRes = await fetch(`${baseURL}/image-in-list/?list_name=contact&tenant__slug=${tenant.slug}`, {
+                // const imgRes = await fetch(`${baseURL}/image-in-list/?list_name=contact&tenant__slug=${tenant.slug}`, {
+                const imgRes = await fetch(`${baseURL}/${tenant.slug}/images/?list_name=contact`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'

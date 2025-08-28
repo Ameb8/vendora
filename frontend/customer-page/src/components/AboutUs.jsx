@@ -23,7 +23,8 @@ export default function AboutUsOverlayCarousel() {
                 setBody(textData.about_us_body);
 
                 // Fetch images
-                const imgRes = await fetch(`${baseURL}/image-in-list/?list_name=about&tenant__slug=${tenant.slug}`, {
+                // const imgRes = await fetch(`${baseURL}/image-in-list/?list_name=about&tenant__slug=${tenant.slug}`, {
+                const imgRes = await fetch(`${baseURL}/${tenant.slug}/images/?list_name=about`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
