@@ -95,7 +95,7 @@ def stripe_webhook(request):
         customer_id = sub_data['customer']
         stripe_subscription_id = sub_data['id']
         plan_price_id = sub_data['items']['data'][0]['price']['id']
-        current_period_end = datetime.fromtimestamp(sub_data['current_period_end'])
+        current_period_end = datetime.fromtimestamp(sub_data['items']['data'][0]['current_period_end'])
 
         tenant = Tenant.objects.get(stripe_customer_id=customer_id)
         plan = SubscriptionPlan.objects.get(stripe_price_id=plan_price_id)
