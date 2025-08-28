@@ -16,13 +16,15 @@ export default function AboutUsOverlayCarousel() {
         async function fetchContent() {
             try {
                 // Fetch header/body text
-                const textRes = await fetch(`${baseURL}/page-text/?tenant__slug=${tenant.slug}`);
+                //const textRes = await fetch(`${baseURL}/page-text/?tenant__slug=${tenant.slug}`);
+                const textRes = await fetch(`${baseURL}/page/${tenant.slug}/`);
                 const textData = await textRes.json();
                 setTitle(textData.about_us_title);
                 setBody(textData.about_us_body);
 
                 // Fetch images
-                const imgRes = await fetch(`${baseURL}/image-in-list/?list_name=about&tenant__slug=${tenant.slug}`, {
+                // const imgRes = await fetch(`${baseURL}/image-in-list/?list_name=about&tenant__slug=${tenant.slug}`, {
+                const imgRes = await fetch(`${baseURL}/${tenant.slug}/images/?list_name=about`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'

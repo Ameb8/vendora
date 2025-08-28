@@ -13,6 +13,7 @@ import ManageSubscription from "../subscriptions/ManageSubscription.jsx";
 import { TenantProvider, useTenant } from '../contexts/TenantContext';
 import SelectTenant from './SelectTenant';
 import TenantDropdown from "./TenantDropdown.jsx";
+import Tutorials from "../tutorials/Tutorials.jsx";
 
 function HomeContent() {
     const { tenants, currentTenant, setCurrentTenant, loading } = useTenant();
@@ -33,6 +34,7 @@ function HomeContent() {
                 <Route path="metrics" element={<MetricsDashboard />} />
                 <Route path="stripe/*" element={<ManageStripe />} />
                 <Route path="subscriptions/*" element={<ManageSubscription />} />
+                <Route path="tutorials" element={<Tutorials />} />
             </Routes>
         </div>
     );

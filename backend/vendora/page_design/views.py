@@ -1,13 +1,20 @@
-from rest_framework import viewsets, permissions, status
-from rest_framework.response import Response
-from rest_framework.decorators import action
-from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import Max, F
 from django.contrib.auth.decorators import user_passes_test
 from django.views.decorators.http import require_POST
+
+from rest_framework import viewsets, permissions, status
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+
+from vendora.permissions import IsTenantAdminOrReadOnly
+from tenants.models import Tenant
+
 # from .permissions import IsAdminOrReadOnly
 from .models import PageDesign, DesignImage, ImageList, ImageInList
 from .serializers import (
@@ -16,6 +23,30 @@ from .serializers import (
     ImageInListCreateSerializer
 )
 
+
+class PageDesignViewSet(ModelViewSet):
+    serializer_class = PageDesignSerializer
+    permission_classes = [IsTenantAdminOrReadOnly]
+    queryset = PageDesign.objects.select_related('tenant')
+
+    def get_object(self):
+        tenant_slug = self.kwargs.get('tenant_slug')
+        try:
+            return PageDesign.objects.get(tenant__slug=tenant_slug)
+        except PageDesign.DoesNotExist:
+            raise NotFound('PageDesign not found for this tenant.')
+
+    def create(self, request, *args, **kwargs):
+        # Optional: auto-inject tenant if tenant_slug in URL
+        tenant_slug = self.kwargs.get('tenant_slug')
+        if tenant_slug:
+            try:
+                tenant = Tenant.objects.get(slug=tenant_slug)
+            except Tenant.DoesNotExist:
+                return Response({'detail': 'Tenant not found'}, status=400)
+
+            request.data['tenant'] = tenant.id
+        return super().create(request, *args, **kwargs)
 
 
 class IsStaffOrReadOnly(permissions.BasePermission):
@@ -79,6 +110,122 @@ class SingletonPageDesignViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class ImageInListViewSet(viewsets.ModelViewSet):
+    queryset = ImageInList.objects.select_related('image', 'image_list', 'tenant')
+    permission_classes = [IsTenantAdminOrReadOnly]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def initialize_request(self, request, *args, **kwargs):
+        """
+        Override to inject tenant_id into request.data (for permissions check)
+        """
+        request = super().initialize_request(request, *args, **kwargs)
+        tenant_slug = self.kwargs.get('tenant_slug')
+        if tenant_slug:
+            try:
+                tenant = Tenant.objects.get(slug=tenant_slug)
+                # Inject tenant_id into request.data for POST permissions
+                if request.method == 'POST' and isinstance(request.data, dict):
+                    request.data['tenant_id'] = tenant.id
+            except Tenant.DoesNotExist:
+                pass  # Let permission class or get_queryset handle the failure
+        return request
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return ImageInListCreateSerializer
+        return ImageInListSerializer
+
+    def get_queryset(self):
+        tenant_slug = self.kwargs.get('tenant_slug')
+        list_name = self.request.query_params.get('list_name')
+
+        qs = self.queryset
+        if tenant_slug:
+            qs = qs.filter(tenant__slug=tenant_slug)
+        if list_name:
+            qs = qs.filter(image_list__name=list_name)
+        return qs.order_by('order')
+
+    def perform_create(self, serializer):
+        tenant_slug = self.kwargs.get('tenant_slug')
+        tenant = Tenant.objects.get(slug=tenant_slug)
+        serializer.save(tenant=tenant)
+
+    @action(
+        detail=False,
+        methods=['post'],
+        permission_classes=[IsTenantAdminOrReadOnly],
+        parser_classes=[MultiPartParser, FormParser]
+    )
+    def add_image_to_list(self, request, tenant_slug=None):
+        image_file = request.FILES.get('image')
+        list_name = request.data.get('list_name')
+
+        if not image_file or not list_name:
+            return Response({'error': 'Both image file and list_name are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            image_list = ImageList.objects.get(name=list_name)
+        except ImageList.DoesNotExist:
+            return Response({'error': f'List with name "{list_name}" not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            tenant = Tenant.objects.get(slug=tenant_slug)
+        except Tenant.DoesNotExist:
+            return Response({'error': 'Invalid tenant_slug.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Inject tenant_id into request.data for permission check
+        request.data['tenant_id'] = tenant.id
+
+        # Create DesignImage
+        design_image = DesignImage.objects.create(image=image_file)
+
+        # Create ImageInList with tenant
+        image_in_list = ImageInList.objects.create(
+            tenant=tenant,
+            image=design_image,
+            image_list=image_list
+        )
+
+        serializer = ImageInListSerializer(image_in_list)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+    @action(detail=False, methods=['post'])
+    def reorder(self, request, tenant_slug=None):
+        """
+        Reorder images in a list based on an array of IDs.
+        Expects: [id1, id2, id3, ...] in request.data
+        """
+        ordered_ids = request.data.get("ordered_ids")
+        if not isinstance(ordered_ids, list):
+            return Response(
+                {"error": "Request body must be a JSON array of IDs"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Scope the objects to this tenant
+        tenant_slug = self.kwargs.get("tenant_slug")
+        qs = self.get_queryset()
+
+        # Validate IDs belong to this tenant
+        db_ids = list(qs.filter(id__in=ordered_ids).values_list("id", flat=True))
+        if set(map(int, ordered_ids)) != set(db_ids):
+            return Response(
+                {"error": "Some IDs are invalid or do not belong to this tenant"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            for order, obj_id in enumerate(ordered_ids):
+                ImageInList.objects.filter(pk=obj_id).update(order=order)
+
+        return Response({"status": "reordered"}, status=status.HTTP_200_OK)
+
+
+
+'''
 class ImageInListViewSet(viewsets.ModelViewSet):
     queryset = ImageInList.objects.select_related('image', 'image_list')
     permission_classes = [IsStaffOrReadOnly]
@@ -174,5 +321,5 @@ class ImageInListViewSet(viewsets.ModelViewSet):
 
         serializer = ImageInListSerializer(image_in_list)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+'''
 

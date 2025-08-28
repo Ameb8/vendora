@@ -18,7 +18,7 @@ import { UserProvider } from './contexts/UserContext';
 import App from './App.jsx'
 import AdminRoot from './admin/src/AdminRoot.jsx'
 import HomePage from './components/HomePage.jsx';
-import Signup from './components/Signup.jsx';
+import TenantSignup from './tenant_signup/TenantSignup.jsx';
 import './index.css'
 
 
@@ -37,7 +37,7 @@ createRoot(document.getElementById('root')).render(
                                   <Routes>
                                       <Route path="/" element={<HomePage />} />
                                       <Route path="/admin/*" element={<AdminRoot />} />
-                                      <Route path="/signup" element={<Signup />} />
+                                      <Route path="/signup" element={<TenantSignup />} />
                                       <Route path="/:slug/*" element={
                                           <TenantProvider>
                                               <ProductProvider>

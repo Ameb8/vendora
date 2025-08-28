@@ -5,7 +5,14 @@ from .models import PageDesign, DesignImage, ImageList, ImageInList
 class PageDesignSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageDesign
+        fields = ['id', 'tenant', 'about_us_title', 'about_us_body', 'contact_num', 'contact_mail']
+        read_only_fields = ['tenant']
+'''
+class PageDesignSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PageDesign
         fields = '__all__'
+'''
 
 class DesignImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField()  # writable
