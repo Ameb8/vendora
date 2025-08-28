@@ -9,7 +9,7 @@ export default function UpdateAbout() {
     const [email, setEmail] = useState('');
     const { user } = useUser();
     const { currentTenant, loading } = useTenant();
-    const imgURL = `${import.meta.env.VITE_API_URL}/design/image-in-list/`
+    const imgURL = `${import.meta.env.VITE_API_URL}/designs/${currentTenant.slug}/images/`;
 
     const handleSubmit = async (e) => {
         e.preventDefault();

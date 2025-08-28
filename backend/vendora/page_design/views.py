@@ -113,7 +113,7 @@ class SingletonPageDesignViewSet(viewsets.ViewSet):
 class ImageInListViewSet(viewsets.ModelViewSet):
     queryset = ImageInList.objects.select_related('image', 'image_list', 'tenant')
     permission_classes = [IsTenantAdminOrReadOnly]
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def initialize_request(self, request, *args, **kwargs):
         """
@@ -192,7 +192,36 @@ class ImageInListViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+    @action(detail=False, methods=['post'])
+    def reorder(self, request, tenant_slug=None):
+        """
+        Reorder images in a list based on an array of IDs.
+        Expects: [id1, id2, id3, ...] in request.data
+        """
+        ordered_ids = request.data.get("ordered_ids")
+        if not isinstance(ordered_ids, list):
+            return Response(
+                {"error": "Request body must be a JSON array of IDs"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
+        # Scope the objects to this tenant
+        tenant_slug = self.kwargs.get("tenant_slug")
+        qs = self.get_queryset()
+
+        # Validate IDs belong to this tenant
+        db_ids = list(qs.filter(id__in=ordered_ids).values_list("id", flat=True))
+        if set(map(int, ordered_ids)) != set(db_ids):
+            return Response(
+                {"error": "Some IDs are invalid or do not belong to this tenant"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            for order, obj_id in enumerate(ordered_ids):
+                ImageInList.objects.filter(pk=obj_id).update(order=order)
+
+        return Response({"status": "reordered"}, status=status.HTTP_200_OK)
 
 
 

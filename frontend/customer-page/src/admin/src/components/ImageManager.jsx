@@ -16,6 +16,8 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { Button, Form, Card, Row, Col } from 'react-bootstrap';
 
+import { useTenant } from '../contexts/TenantContext.jsx'
+
 function SortableImage({ item, onDelete }) {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
 
@@ -51,6 +53,7 @@ function SortableImage({ item, onDelete }) {
 export default function ImageManager({ getURL, addURL, deleteURL, orderURL, list }) {
     const [images, setImages] = useState([]);
     const [file, setFile] = useState(null);
+    const { currentTenant, loading } = useTenant();
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -144,14 +147,17 @@ export default function ImageManager({ getURL, addURL, deleteURL, orderURL, list
     const applyReordering = () => {
         const token = localStorage.getItem('token');
         const orderedIds = images.map(item => item.id);
-        console.log(orderedIds);
+
         fetch(orderURL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: `Token ${token}`,
             },
-            body: JSON.stringify(orderedIds),
+            body: JSON.stringify({
+                tenant_id: currentTenant.id,
+                ordered_ids: orderedIds,
+            }),
         }).then(() => alert('Reordering applied!'));
     };
 
