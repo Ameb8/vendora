@@ -111,6 +111,93 @@ class SingletonPageDesignViewSet(viewsets.ViewSet):
 
 
 class ImageInListViewSet(viewsets.ModelViewSet):
+    queryset = ImageInList.objects.select_related('image', 'image_list', 'tenant')
+    permission_classes = [IsTenantAdminOrReadOnly]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def initialize_request(self, request, *args, **kwargs):
+        """
+        Override to inject tenant_id into request.data (for permissions check)
+        """
+        request = super().initialize_request(request, *args, **kwargs)
+        tenant_slug = self.kwargs.get('tenant_slug')
+        if tenant_slug:
+            try:
+                tenant = Tenant.objects.get(slug=tenant_slug)
+                # Inject tenant_id into request.data for POST permissions
+                if request.method == 'POST' and isinstance(request.data, dict):
+                    request.data['tenant_id'] = tenant.id
+            except Tenant.DoesNotExist:
+                pass  # Let permission class or get_queryset handle the failure
+        return request
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return ImageInListCreateSerializer
+        return ImageInListSerializer
+
+    def get_queryset(self):
+        tenant_slug = self.kwargs.get('tenant_slug')
+        list_name = self.request.query_params.get('list_name')
+
+        qs = self.queryset
+        if tenant_slug:
+            qs = qs.filter(tenant__slug=tenant_slug)
+        if list_name:
+            qs = qs.filter(image_list__name=list_name)
+        return qs.order_by('order')
+
+    def perform_create(self, serializer):
+        tenant_slug = self.kwargs.get('tenant_slug')
+        tenant = Tenant.objects.get(slug=tenant_slug)
+        serializer.save(tenant=tenant)
+
+    @action(
+        detail=False,
+        methods=['post'],
+        permission_classes=[IsTenantAdminOrReadOnly],
+        parser_classes=[MultiPartParser, FormParser]
+    )
+    def add_image_to_list(self, request, tenant_slug=None):
+        image_file = request.FILES.get('image')
+        list_name = request.data.get('list_name')
+
+        if not image_file or not list_name:
+            return Response({'error': 'Both image file and list_name are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            image_list = ImageList.objects.get(name=list_name)
+        except ImageList.DoesNotExist:
+            return Response({'error': f'List with name "{list_name}" not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            tenant = Tenant.objects.get(slug=tenant_slug)
+        except Tenant.DoesNotExist:
+            return Response({'error': 'Invalid tenant_slug.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Inject tenant_id into request.data for permission check
+        request.data['tenant_id'] = tenant.id
+
+        # Create DesignImage
+        design_image = DesignImage.objects.create(image=image_file)
+
+        # Create ImageInList with tenant
+        image_in_list = ImageInList.objects.create(
+            tenant=tenant,
+            image=design_image,
+            image_list=image_list
+        )
+
+        serializer = ImageInListSerializer(image_in_list)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
+
+
+'''
+class ImageInListViewSet(viewsets.ModelViewSet):
     queryset = ImageInList.objects.select_related('image', 'image_list')
     permission_classes = [IsStaffOrReadOnly]
     parser_classes = [MultiPartParser, FormParser]
@@ -205,5 +292,5 @@ class ImageInListViewSet(viewsets.ModelViewSet):
 
         serializer = ImageInListSerializer(image_in_list)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
+'''
 
