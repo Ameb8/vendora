@@ -30,24 +30,29 @@ createRoot(document.getElementById('root')).render(
               <Elements stripe={stripePromise}>
                   <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_PUBLIC}>
                       <UserProvider>
-                          <CartProvider>
-                              <CartUIProvider>
-                                  <Toaster />
+                          <Toaster />
 
-                                  <Routes>
-                                      <Route path="/" element={<HomePage />} />
-                                      <Route path="/admin/*" element={<AdminRoot />} />
-                                      <Route path="/signup" element={<TenantSignup />} />
-                                      <Route path="/:slug/*" element={
-                                          <TenantProvider>
-                                              <ProductProvider>
+                          <Routes>
+                              <Route path="/" element={<HomePage />} />
+                              <Route path="/admin/*" element={<AdminRoot />} />
+                              <Route path="/signup" element={<TenantSignup />} />
+                              <Route path="/:slug/*" element={
+
+                                  <TenantProvider>
+                                      <ProductProvider>
+                                          <CartProvider>
+                                              <CartUIProvider>
+
                                                   <App />
-                                              </ProductProvider>
-                                          </TenantProvider>
-                                      } />
-                                  </Routes>
-                              </CartUIProvider>
-                          </CartProvider>
+
+                                              </CartUIProvider>
+                                          </CartProvider>
+                                      </ProductProvider>
+                                  </TenantProvider>
+
+                              } />
+
+                          </Routes>
                       </UserProvider>
                   </GoogleOAuthProvider>
               </Elements>
