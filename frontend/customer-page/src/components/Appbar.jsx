@@ -8,6 +8,7 @@ import { useCart } from "../contexts/CartContext.jsx";
 import CartIcon from "../icons/CartIcon.jsx";
 import SearchIcon from "../icons/SearchIcon.jsx";
 import FilterIcon from "../icons/FilterIcon.jsx";
+import UserIcon from '../user/UserIcon.jsx';
 import { Button, Form, InputGroup } from "react-bootstrap";
 import { ProductContext } from "../contexts/ProductContext.jsx";
 import ShopBy from "./ShopBy.jsx";
@@ -139,6 +140,8 @@ function Appbar() {
                             onClick={openCart}
                             style={{ cursor: 'pointer' }}
                         >
+                            <UserIcon />
+
                             <CartIcon
                                 className={`nav-icon right-icon ${shouldWiggle ? 'wiggle' : ''}`}
                                 role="img"
