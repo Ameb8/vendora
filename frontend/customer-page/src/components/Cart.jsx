@@ -12,7 +12,7 @@ export default function Cart({ isOpen, onClose }) {
     // Close cart and navigate to checkout
     const handleCheckoutClick = () => {
         if (onClose) onClose();
-        navigate('/checkout');
+        navigate(`checkout`);
     };
 
     return (

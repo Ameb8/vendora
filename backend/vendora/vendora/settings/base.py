@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 
     # Local apps
-    'accounts',
+    'accounts.apps.AuthConfig',
     'products',
     'orders',
     'tenants',

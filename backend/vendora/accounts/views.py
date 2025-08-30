@@ -14,10 +14,13 @@ import requests
 
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
+from cloudinary.uploader import upload as cloudinary_upload
+from cloudinary.exceptions import Error as CloudinaryError
 
 from addresses.serializers import AddressSerializer
+
 from .models import AdminAccessRequest, UserAddress
-from .serializers import AdminAccessRequestSerializer, UserAddressSerializer
+from .serializers import UserSerializer, AdminAccessRequestSerializer, UserAddressSerializer
 
 
 class GoogleLogin(APIView):
@@ -34,6 +37,7 @@ class GoogleLogin(APIView):
 
         data = response.json()
         email = data.get('email')
+        picture_url = data.get('picture')
 
         if not email:
             return Response({'error': 'No email in token'}, status=400)
@@ -44,8 +48,24 @@ class GoogleLogin(APIView):
 
         token, _ = Token.objects.get_or_create(user=user)
 
+        # # Save Google profile picture to account
+        if created and picture_url:
+            try:
+                upload_result = cloudinary_upload(picture_url)
+                user.profile.profile_picture = upload_result['public_id']  # or 'secure_url' for full URL
+                user.profile.save()
+            except CloudinaryError as e:
+                print(f"Cloudinary upload failed: {e}")
+
         return Response({'key': token.key})
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def current_user(request):
+    serializer = UserSerializer(request.user)
+    return Response(serializer.data)
+
+'''
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def current_user(request):
@@ -57,6 +77,7 @@ def current_user(request):
         'email': user.email,
         'is_staff': user.is_staff,
     })
+'''
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
