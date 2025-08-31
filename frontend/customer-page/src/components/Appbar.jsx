@@ -18,14 +18,14 @@ import LoginDropdown from '../user/LoginDropdown.jsx';
 import { Button, Form, InputGroup } from "react-bootstrap";
 import './Appbar.css';
 
-function Appbar() {
+function Appbar({ onUserIconClick, userIconRef }) {
     const [cartOpen, setCartOpen] = useState(false);
     const [searchMode, setSearchMode] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [showFilterMenu, setShowFilterMenu] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
 
-    const userIconRef = useRef(null);
+    // const userIconRef = useRef(null);
     const dropdownRef = useRef(null);
 
     const { tenant } = useTenant();
@@ -101,7 +101,7 @@ function Appbar() {
 
                         <div className="d-flex align-items-center gap-3 position-relative">
                             <div ref={userIconRef}>
-                                <UserIcon onClick={() => setDropdownOpen(prev => !prev)} />
+                                <UserIcon onClick={onUserIconClick} />
                             </div>
 
                             <div className="position-relative" onClick={() => setCartOpen(true)}>
