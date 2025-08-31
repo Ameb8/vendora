@@ -1,5 +1,36 @@
+// UserIcon.jsx
+import { useUser } from '../contexts/UserContext';
+import './UserIcon.css';
+
+const UserIcon = ({ onClick }) => {
+    const { user } = useUser();
+
+    const renderAvatar = () => {
+        if (user?.profile?.profile_picture) {
+            return <img src={user.profile.profile_picture} alt="User Avatar" className="user-icon-img" />;
+        } else if (user?.initials) {
+            return <span className="user-icon-initials">{user.initials}</span>;
+        } else {
+            return <img src="/assets/default_avatar.png" alt="Default Avatar" className="user-icon-img" />;
+        }
+    };
+
+    return (
+        <div className="user-icon-container" onClick={onClick}>
+            {renderAvatar()}
+        </div>
+    );
+};
+
+export default UserIcon;
+
+
+/*
 import { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
+
+import './UserIcon.css';
+
 
 const UserIcon = () => {
     const { user, isAuthenticated, logout } = useUser();
@@ -41,3 +72,5 @@ const UserIcon = () => {
 };
 
 export default UserIcon;
+
+ */
