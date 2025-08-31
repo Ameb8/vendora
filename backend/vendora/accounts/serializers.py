@@ -1,8 +1,35 @@
-from rest_framework import serializers
 from django.contrib.auth.models import User
+
+from rest_framework import serializers
+
 from addresses.models import Address
 from addresses.serializers import AddressSerializer
-from .models import AdminAccessRequest, UserAddress
+
+from .models import AdminAccessRequest, UserAddress, UserProfile
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    profile_picture = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProfile
+        fields = ['profile_picture']
+
+    def get_profile_picture(self, obj):
+        return obj.profile_picture.url if obj.profile_picture else None
+
+class UserSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer()
+    initials = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'is_staff', 'profile', 'initials']
+
+    def get_initials(self, obj):
+        if obj.first_name and obj.last_name:
+            return f'{obj.first_name[0]}{obj.last_name[0]}'.upper()
+
+        return obj.username[0].upper()
 
 class AdminAccessRequestSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')

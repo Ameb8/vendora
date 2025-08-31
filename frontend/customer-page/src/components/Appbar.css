@@ -62,3 +62,14 @@
 .filter-sidebar.open {
     transform: translateX(0);
 }
+
+.custom-dropdown {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.5rem;
+    min-width: 150px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+

@@ -1,0 +1,39 @@
+.user-icon-container {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: 2px solid #ddd;
+    background-color: #f0f0f0;
+}
+
+.user-icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.user-icon-initials {
+    font-size: 18px;
+    color: #fff;
+    font-weight: bold;
+    background-color: #007bff;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+}
+
+.dropdown-menu {
+    right: 0;
+    left: auto;
+    min-width: 150px;
+}

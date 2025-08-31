@@ -12,6 +12,7 @@ import { useTenant } from './contexts/TenantContext.jsx';
 import FilterCategory from "./components/FilterMenu.jsx";
 import './App.css';
 import axios from 'axios'
+import Header from "./components/Header.jsx";
 
 
 function App() {
@@ -31,11 +32,14 @@ function App() {
             style={{ backgroundColor: tenant.color_secondary}}
         >
             <div>
+                <Header />
+                {/*
                 <Appbar tenant={tenant} />
                 <Navbar
                     selectedPage={selectedPage}
                     setSelectedPage={setSelectedPage}
                 />
+                */}
             </div>
             <div className="flex-grow-1 overflow-auto">
                 <Routes>
