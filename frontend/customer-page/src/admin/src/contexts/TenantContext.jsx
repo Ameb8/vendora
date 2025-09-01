@@ -22,6 +22,7 @@ export const TenantProvider = ({ children }) => {
                 });
                 if (!response.ok) throw new Error("Failed to fetch tenants");
                 const data = await response.json();
+                console.log(data); // DEBUG *******
                 setTenants(data);
             } catch (err) {
                 console.error(err);

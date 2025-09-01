@@ -19,7 +19,10 @@ import App from './App.jsx'
 import AdminRoot from './admin/src/AdminRoot.jsx'
 import HomePage from './components/HomePage.jsx';
 import TenantSignup from './tenant_signup/TenantSignup.jsx';
+import ProfilePage from "./user/ProfilePage.jsx";
+
 import './index.css'
+
 
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
@@ -35,6 +38,7 @@ createRoot(document.getElementById('root')).render(
                           <Routes>
                               <Route path="/" element={<HomePage />} />
                               <Route path="/admin/*" element={<AdminRoot />} />
+                              <Route path="/profile" element={<ProfilePage />} />
                               <Route path="/signup" element={<TenantSignup />} />
                               <Route path="/:slug/*" element={
 
