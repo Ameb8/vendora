@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
+import { setSetCurrentTenant } from '../../../TenantManager.js';
+
 const TenantContext = createContext();
 
 export const TenantProvider = ({ children }) => {
@@ -10,6 +12,10 @@ export const TenantProvider = ({ children }) => {
         return savedTenant ? JSON.parse(savedTenant) : null;
     });
     const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        setSetCurrentTenant(setCurrentTenant);
+    }, [setCurrentTenant]);
 
     useEffect(() => {
         const fetchTenants = async () => {

@@ -45,11 +45,13 @@ class UserAddressSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserAddress
-        fields = ['__all__']
+        fields = ['address']
 
     def create(self, validated_data):
+        validated_data.pop('user', None)
         address_data = validated_data.pop('address')
         address = Address.objects.create(**address_data)
+
         return UserAddress.objects.create(user=self.context['request'].user, address=address, **validated_data)
 
     def update(self, instance, validated_data):
@@ -64,3 +66,4 @@ class UserAddressSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+

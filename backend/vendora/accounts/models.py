@@ -33,4 +33,4 @@ class UserAddress(models.Model):
         unique_together = ('user', 'address')
 
     def __str__(self):
-        return f"{self.user.username} — {self.label or self.address}"
+        return f"{self.user.username} — {self.address}"

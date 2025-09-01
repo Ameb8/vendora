@@ -1,13 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useUser } from '../contexts/UserContext';
+import { useNavigate } from 'react-router-dom';
+
 import { Container, Card, Row, Col, Button, Spinner, Dropdown } from 'react-bootstrap';
 import { FaUserCircle, FaEnvelope, FaSignOutAlt, FaUserShield, FaBuilding } from 'react-icons/fa';
+
+import { useUser } from '../contexts/UserContext';
+import { setCurrentTenantExternal } from '../tenantManager';
 
 const ProfilePage = () => {
     const { user, loading, logout } = useUser();
     const [tenants, setTenants] = useState([]);
     const [tenantsLoading, setTenantsLoading] = useState(true);
     const [tenantsError, setTenantsError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchTenants = async () => {
@@ -89,7 +94,13 @@ const ProfilePage = () => {
                                     </Dropdown.Toggle>
                                     <Dropdown.Menu>
                                         {tenants.map((tenant) => (
-                                            <Dropdown.Item key={tenant.id}>
+                                            <Dropdown.Item
+                                                key={tenant.id}
+                                                onClick={() => {
+                                                    setCurrentTenantExternal(tenant); // Set selected tenant
+                                                    navigate('/admin');               // Navigate to /admin
+                                                }}
+                                            >
                                                 {tenant.name}
                                             </Dropdown.Item>
                                         ))}

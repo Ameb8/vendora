@@ -180,6 +180,10 @@ class UserAddressViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return UserAddress.objects.filter(user=self.request.user)
 
+    def perform_create(self, serializer):
+        # Automatically associate the user (authenticated user) with the UserAddress
+        serializer.save(user=self.request.user)
+
     def perform_destroy(self, instance):
         instance.address.delete()
         instance.delete()
