@@ -23,13 +23,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'is_staff', 'profile', 'initials']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'profile', 'initials']
 
     def get_initials(self, obj):
         if obj.first_name and obj.last_name:
             return f'{obj.first_name[0]}{obj.last_name[0]}'.upper()
 
         return obj.username[0].upper()
+
 
 class AdminAccessRequestSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField(source='user.username')

@@ -32,7 +32,7 @@ class TenantViewSet(viewsets.ModelViewSet):
 
         if self.action == 'list':
             # No tenants listed publicly
-            return Tenant.objects.none()
+            return Tenant.objects.filter(owner=user)
 
         # For detail views: return tenants where the user is TenantAdmin
         return Tenant.objects.filter(admin_links__user=user)
