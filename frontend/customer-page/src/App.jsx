@@ -5,8 +5,8 @@ import Appbar from "./components/Appbar.jsx";
 import Navbar from "./components/Navbar.jsx";
 import AboutUs from "./components/AboutUs.jsx"
 import ContactUs from './components/ContactUs';
-//import Checkout from "./components/Checkout.jsx";
-import CheckoutDetails from "./checkout/CheckoutDetails.jsx";
+import CheckoutSteps from "./checkout/CheckoutSteps.jsx";
+// import CheckoutDetails from "./checkout/CheckoutDetails.jsx";
 import OrderSuccess from "./components/OrderSuccess.jsx";
 import ViewOrder from "./components/ViewOrder.jsx"
 import { useTenant } from './contexts/TenantContext.jsx';
@@ -42,7 +42,7 @@ function App() {
                     <Route path="/shopby" element={<ProductList />} />
                     <Route path="/aboutus" element={<AboutUs />} />
                     <Route path="/contact" element={<ContactUs />} />
-                    <Route path="/checkout" element={<CheckoutDetails/>} />
+                    <Route path="/checkout" element={<CheckoutSteps />} />
                     <Route path="/success" element={<OrderSuccess />} />
                     <Route path="/shipment" element={<ViewOrder />} />
                 </Routes>

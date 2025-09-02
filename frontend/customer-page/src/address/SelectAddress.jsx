@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Dropdown, Button, Modal, Spinner } from 'react-bootstrap';
+
 import AddressForm from './AddressForm.jsx';
 
-const AddressDropdown = ({ onAddressSelect }) => {
+import { useCheckout } from '../checkout/CheckoutContext';
+
+const AddressDropdown = () => {
+    const { address, updateAddress } = useCheckout();
+
     const [addresses, setAddresses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -29,7 +34,7 @@ const AddressDropdown = ({ onAddressSelect }) => {
     // Handle address selection
     const handleSelect = (address) => {
         setSelectedAddress(address);
-        onAddressSelect(address); // Notify parent about the selected address
+        updateAddress(address);
     };
 
     // Open address creator

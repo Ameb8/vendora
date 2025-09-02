@@ -14,6 +14,7 @@ import { CartProvider } from "./contexts/CartContext.jsx";
 import { CartUIProvider } from "./contexts/CartUIContext.jsx";
 import { TenantProvider } from "./contexts/TenantContext.jsx";
 import { UserProvider } from './contexts/UserContext';
+import { CheckoutProvider } from './checkout/CheckoutContext.jsx';
 
 import App from './App.jsx'
 import AdminRoot from './admin/src/AdminRoot.jsx'
@@ -46,9 +47,11 @@ createRoot(document.getElementById('root')).render(
                                       <ProductProvider>
                                           <CartProvider>
                                               <CartUIProvider>
+                                                  <CheckoutProvider>
 
-                                                  <App />
+                                                      <App />
 
+                                                  </CheckoutProvider>
                                               </CartUIProvider>
                                           </CartProvider>
                                       </ProductProvider>
