@@ -1,8 +1,16 @@
 import { useState } from 'react';
+
 import SelectAddress from '../address/SelectAddress';
+import Checkout from '../components/Checkout.jsx';
+
+import { useUser } from '../contexts/UserContext';
+import { useTenant } from '../contexts/TenantContext.jsx';
 
 const CheckoutDetails = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
+
+    const { user } = useUser();
+    const { tenant } = useTenant
 
     const handleAddressSelect = (address) => {
         setSelectedAddress(address);
@@ -19,6 +27,12 @@ const CheckoutDetails = () => {
                     <p>{selectedAddress.address.street_address}, {selectedAddress.address.city}</p>
                 </div>
             )}
+            <Checkout
+                address={selectedAddress}
+                setAddress={setSelectedAddress}
+                email={user.email}
+                tenant={tenant}
+            />
         </div>
     );
 };
