@@ -5,10 +5,10 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class Size:
-    height_cm: float
-    width_cm: float
-    depth_cm: float
-    weight_oz: float
+    height_in: float
+    width_in: float
+    depth_in: float
+    weight_lb: float
 
 class Product(models.Model):
     # Product info
@@ -37,25 +37,28 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    _weight_conversion: dict[str, float] = {
-        'lb': 16.0,
-        'kg': 35.274,
-        'g': 0.0035,
-        'oz': 1.0,
+    _weight_conversion_to_lb: dict[str, float] = {
+        'lb': 1.0,
+        'kg': 1.0 / 16.0,
+        'g': 2.20462,
+        'oz': 0.00220462,
     }
 
     _height_conversion: dict[str, float] = {
-        'in': 2.54,  # inches to cm
-        'cm': 1.0
+        'in': 1.0,
+        'cm': 1.0 / 2.54
     }
 
     @property
     def size(self) -> Size:
+        conv = self._dimension_conversion_to_in[self.distance_unit]
+        weight_conv = self._weight_conversion_to_lb[self.weight_unit]
+
         return Size(
-            length_cm = self._height_conversion[self.distance_unit] * float(self.length),
-            width_cm=self._height_conversion[self.distance_unit] * float(self.width),
-            height_cm=self._height_conversion[self.distance_unit] * float(self.height),
-            weight_oz=self._weight_conversion[self.weight_unit] * float(self.weight_value),
+            height_in=round(float(self.height) * conv, 2),
+            width_in=round(float(self.width) * conv, 2),
+            depth_in=round(float(self.length) * conv, 2),  # "length" = "depth"
+            weight_lb=round(float(self.weight_value) * weight_conv, 2),
         )
 
 class ProductImages(models.Model):

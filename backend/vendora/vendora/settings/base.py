@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'page_design',
     'payments',
     'subscriptions',
+    'shipments',
 ]
 SITE_ID = 1
 
