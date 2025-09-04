@@ -12,3 +12,16 @@ class Address(models.Model):
     def __str__(self):
         return f"{self.street_address}, {self.city}"
 
+    @property
+    def as_dict(self) -> dict[str, str]:
+        address = {
+            "street1": self.street_address,
+            "city": self.city,
+            "state": self.state,
+            "zip": self.postal_code,
+            "country": self.country.code if hasattr(self.country, "code") else str(self.country)
+        }
+
+        if self.apartment_address:
+            address["street2"] = self.apartment_address
+

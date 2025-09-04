@@ -5,8 +5,10 @@ from django.utils import timezone
 from cloudinary.models import CloudinaryField
 import stripe
 
+from addresses.models import Address
+
 class Tenant(models.Model):
-    # Unique identifier (e.g. used in subdomains or API keys)
+    # Unique identifier and url route for tenant's page
     slug = models.SlugField(unique=True, help_text="Unique tenant identifier, e.g. 'tenant1'")
 
     # Tenant's display name
@@ -26,7 +28,7 @@ class Tenant(models.Model):
     # Contact and business info
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
+    address = models.OneToOneField(Address, on_delete=models.CASCADE, blank=True, null=True)
 
     # Tenants subdomain
     domain = models.CharField(max_length=255, unique=True, help_text="Custom domain or subdomain")

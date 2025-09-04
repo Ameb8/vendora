@@ -1,10 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import User
+
 from phonenumber_field.modelfields import PhoneNumberField
 import uuid
+
+from addresses.models import Address
 from tenants.models import Tenant
+from products.models import Size
 
+from .packaging import get_min_package
 
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from shipments.models import Shipment
+
+'''
 class Address(models.Model):
     full_name = models.CharField(max_length=255, null=True, blank=True)
     street_address = models.CharField(max_length=255)
@@ -17,6 +28,8 @@ class Address(models.Model):
 
     def __str__(self):
         return f"{self.full_name}, {self.street_address}, {self.city}"
+'''
+
 
 class Order(models.Model):
     # User info
@@ -47,6 +60,36 @@ class Order(models.Model):
     @property
     def products(self):
         return [item.product for item in self.items.all()]
+
+    @property
+    def to_adr(self) -> dict[str, str]:
+        if self.shipping_address:
+            return self.shipping_address.as_dict
+        return {}
+
+    @property
+    def from_adr(self) -> dict[str, str]:
+        if self.tenant and hasattr(self.tenant, 'address') and self.tenant.address:
+            return self.tenant.address.as_dict
+        return {}
+
+    @property
+    def is_complete(self) -> bool:
+        return self.shipping_address and getattr(self, 'shipment', None)
+
+    @property
+    def shipment(self) -> Optional["Shipment"]:
+        return getattr(self, 'shipment', None)
+
+    @property
+    def package(self) -> dict[str, any]:
+        product_sizes: list[Size] = []
+
+        for item in self.items.all():
+            product_sizes.extend([item.product.size] * item.quantity)
+
+        return get_min_package(product_sizes)
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)

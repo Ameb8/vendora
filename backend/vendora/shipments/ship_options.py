@@ -26,3 +26,53 @@ def get_options(order: Order, to_adr: dict[str, str], from_adr: dict[str, str], 
             "mass_unit": "oz",
         }]
     )
+
+
+import shippo
+
+from dataclasses import dataclass
+from collections import defaultdict
+
+from orders.models import Order
+
+@dataclass
+class ShipmentOption:
+    carrier: str
+    service: str
+    amount: float
+    currency: str
+    delivery_days: int | None
+    rate_object_id: str
+
+def get_cheapest_options(order: Order) -> list[ShipmentOption]:
+    shipment = shippo.Shipment.create(
+        address_from=order.from_adr,
+        address_to=order.to_adr,
+        parcels=order.package,
+        asynchronous=False
+    )
+
+    rates = shipment.get("rates", [])
+
+    # Group rates by carrier
+    carrier_rates = defaultdict(list)
+    for rate in rates:
+        carrier = rate['provider']
+        carrier_rates[carrier].append(rate)
+
+    # Get the cheapest rate per carrier
+    cheapest_per_carrier = []
+    for carrier, rates_list in carrier_rates.items():
+        cheapest = min(rates_list, key=lambda r: float(r['amount']))
+        option = ShipmentOption(
+            carrier=carrier,
+            service=cheapest['servicelevel']['name'],
+            amount=float(cheapest['amount']),
+            currency=cheapest['currency'],
+            delivery_days=cheapest.get('estimated_days'),
+            rate_object_id=cheapest['object_id']
+        )
+        cheapest_per_carrier.append(option)
+
+    return cheapest_per_carrier
+
