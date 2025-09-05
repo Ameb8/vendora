@@ -29,8 +29,6 @@ export default function Checkout({ address, setAddress, email: propEmail, tenant
     useEffect(() => {
         const createOrder = async () => {
             if (!email || !address?.id || !tenant?.id || cart.length === 0) {
-                let dbg = `Console Log Failed: email: ${email}, address: ${address}, tenant: ${tenant}, cart: ${cart.length}`;
-                console.log(dbg);
                 return;
             }
 

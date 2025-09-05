@@ -1,9 +1,14 @@
 from rest_framework import serializers
 from phonenumber_field.serializerfields import PhoneNumberField as SerializerPhoneNumberField
-from .models import Order, OrderItem, Address, PhoneAlert, EmailAlert
+
+from decimal import Decimal, ROUND_HALF_UP
+
 from products.models import Product
 from products.serializers import ProductSerializer
 
+from .models import Order, OrderItem, PhoneAlert, EmailAlert
+
+'''
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
@@ -11,6 +16,7 @@ class AddressSerializer(serializers.ModelSerializer):
             'full_name', 'street_address', 'apartment_address',
             'city', 'state', 'postal_code', 'country', 'phone_number'
         ]
+'''
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField()
@@ -29,14 +35,16 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         items_data = validated_data.pop('items')
-        total = 0
+        total = Decimal('0.00')
 
         for item in items_data:
             product = Product.objects.get(id=item['product_id'])
             total += product.price * item['quantity']
 
+        total_cents = int((total * 100).to_integral_value(rounding=ROUND_HALF_UP))
+
         # Now we know the total, so we can create the order
-        order = Order.objects.create(total_amount=total, **validated_data)
+        order = Order.objects.create(total_amount=total_cents, **validated_data)
 
         # Then add order items
         for item in items_data:

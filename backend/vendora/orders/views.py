@@ -10,15 +10,18 @@ from django.shortcuts import get_object_or_404
 import stripe
 import shippo
 import json
-from .order_alert import notify_order
-from .models import Order, OrderItem, Address, PhoneAlert, EmailAlert
+
 from products.models import Product
 from vendora.permissions import IsAdminOrReadOnly
+from addresses.serializers import AddressSerializer
+from addresses.models import Address
+
+from .order_alert import notify_order
+from .models import Order, OrderItem, PhoneAlert, EmailAlert
 from .serializers import (
     OrderCreateSerializer,
     OrderSerializer,
     OrderItemDetailSerializer,
-    AddressSerializer,
     PublicOrderSummarySerializer,
     PhoneAlertSerializer,
     EmailAlertSerializer,

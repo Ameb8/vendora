@@ -40,6 +40,7 @@ class Order(models.Model):
     order_code = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
     tenant = models.ForeignKey(Tenant, on_delete=models.SET_NULL, null=True)
+    shipping_cost = models.IntegerField(blank=True, null=True)
 
     # Stripe info
     stripe_payment_intent_id = models.CharField(max_length=255, blank=True, null=True)

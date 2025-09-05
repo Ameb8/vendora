@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, ProgressBar, Row, Col } from 'react-bootstrap';
 
 import SelectAddress from '../address/SelectAddress';
@@ -6,29 +6,83 @@ import Checkout from '../components/Checkout.jsx';
 import ConfirmOrder from './ConfirmOrder.jsx';
 
 import { useCheckout } from '../checkout/CheckoutContext';
+import { useCart } from '../contexts/CartContext';
+import { useTenant } from '../contexts/TenantContext.jsx';
+import { useUser } from '../contexts/UserContext.jsx';
 
 const CheckoutSteps = () => {
     const [currentStep, setCurrentStep] = useState(0);
-    const { address } = useCheckout(); // Get the address from context
+    const [canProceedState, setCanProceedState] = useState(false);
+
+    const { address } = useCheckout();
+    const { cart } = useCart()
+    const { tenant } = useTenant();
+    const { user } = useUser();
+
+    const email = 'test@test.com';
+    const baseURL = `${import.meta.env.VITE_API_URL}`
+    const items = cart.map(item => ({
+        product_id: item.id,
+        quantity: item.quantity,
+    }));
+
+    const createOrder = async () => {
+        // DEBUG ****
+        console.log(address)
+        try {
+            const res = await fetch(`${baseURL}/orders/create-order/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email,
+                    shipping_address: address.id,
+                    tenant: tenant.id,
+                    items,
+                }),
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to create order");
+            }
+
+            const data = await res.json();
+            console.log(`\n\nOrder Object Created:\n\n${data}\n\n`);
+        } catch (err) {
+            console.error(err);
+            alert("Error creating order. Please try again.");
+        }
+    }
 
     const steps = [
-        { label: 'Select Address', component: <SelectAddress /> },
-        { label: 'Checkout', component: <Checkout /> },
-        { label: 'Confirm Order', component: <ConfirmOrder /> },
+        {
+            label: 'Select Address',
+            component: <SelectAddress />,
+            onNext: createOrder,
+            // canProceed: () => Boolean(address && address.id)
+        },
+        {
+            label: 'Confirm Order',
+            component: <ConfirmOrder />,
+            buttonText: 'Proceed to Payment'
+        },
+        {
+            label: 'Checkout',
+            component: <Checkout />
+        },
+
     ];
 
-    // Custom next step logic for each step
-    const nextStep = () => {
-        if (currentStep === steps.length - 1) {
-            // Custom logic for the "Confirm Order" step
-            handleConfirmOrder();
-        } else {
-            // Default next step behavior
-            if (currentStep < steps.length - 1) {
-                setCurrentStep(currentStep + 1);
-            }
+    const nextStep = async () => {
+        const step = steps[currentStep];
+
+        if (step.onNext) {
+            step.onNext()
         }
-    };
+
+        if (currentStep < steps.length - 1) {
+            setCurrentStep(currentStep + 1);
+        }
+    }
 
     const prevStep = () => {
         if (currentStep > 0) {
@@ -37,19 +91,30 @@ const CheckoutSteps = () => {
     };
 
     const handleConfirmOrder = () => {
-        console.log("Proceeding with payment after confirming address", address);
-        // Add your API call or other logic here
-        // After confirming, move to the next step (e.g., Checkout or Payment)
         setCurrentStep(currentStep + 1);
     };
 
-    // Determine the button text based on the current step
-    const getButtonText = () => {
-        if (currentStep === steps.length - 2) {
-            return 'Proceed to Payment'; // Custom text for the Confirm Order step
+    const canProceed = () => {
+        if (currentStep === 0) {
+            return Boolean(address /*&& address.id*/);
         }
-        return 'Next'; // Default text for other steps
+        return true;
     };
+
+    useEffect(() => {
+        console.log("Use effect Ran"); // DEBUG *******
+        console.log(`Address: ${address}`);
+        /*
+        const step = steps[currentStep];
+        if (step.canProceed) {
+            const canProceedNow = step.canProceed();
+            setCanProceedState(canProceedNow);
+        }
+         */
+    }, [address, currentStep]);
+
+    // Determine the button text based on the current step
+    const getButtonText = () => steps[currentStep].buttonText || 'Next';
 
     return (
         <div className="container my-5">
@@ -83,7 +148,7 @@ const CheckoutSteps = () => {
                     <Button
                         variant="primary"
                         onClick={nextStep}
-                        disabled={currentStep === steps.length - 1}
+                        disabled={!canProceed() || currentStep === steps.length - 1}
                     >
                         {getButtonText()}
                     </Button>
@@ -97,28 +162,95 @@ export default CheckoutSteps;
 
 
 
+
+
+
 /*
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, ProgressBar, Row, Col } from 'react-bootstrap';
 
 import SelectAddress from '../address/SelectAddress';
 import Checkout from '../components/Checkout.jsx';
-import ConfirmOrder from './ConfirmOrder.jsx'
+import ConfirmOrder from './ConfirmOrder.jsx';
+
+import { useCheckout } from '../checkout/CheckoutContext';
+import { useCart } from '../contexts/CartContext';
+import { useTenant } from '../contexts/TenantContext.jsx';
+import { useUser } from '../contexts/UserContext.jsx';
 
 const CheckoutSteps = () => {
     const [currentStep, setCurrentStep] = useState(0);
+    const [canProceedState, setCanProceedState] = useState(false);
+
+    const { address } = useCheckout();
+    const { cart } = useCart()
+    const { tenant } = useTenant();
+    const { user } = useUser();
+
+    const email = 'test@test.com';
+    const baseURL = `${import.meta.env.VITE_API_URL}`
+    const items = cart.map(item => ({
+        product_id: item.id,
+        quantity: item.quantity,
+    }));
+
+    const createOrder = async () => {
+        // DEBUG ****
+        console.log(address)
+        try {
+            const res = await fetch(`${baseURL}/orders/create-order/`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email,
+                    shipping_address: address.id,
+                    tenant: tenant.id,
+                    items,
+                }),
+            });
+
+            if (!res.ok) {
+                throw new Error("Failed to create order");
+            }
+
+            const data = await res.json();
+            console.log(`\n\nOrder Object Created:\n\n${data}\n\n`);
+        } catch (err) {
+            console.error(err);
+            alert("Error creating order. Please try again.");
+        }
+    }
 
     const steps = [
-        { label: 'Select Address', component: <SelectAddress /> },
-        { label: 'Checkout', component: <Checkout /> },
-        { label: 'ConfirmOrder', component: <ConfirmOrder /> },
+        {
+            label: 'Select Address',
+            component: <SelectAddress />,
+            onNext: createOrder,
+            canProceed: () => Boolean(address && address.id)
+        },
+        {
+            label: 'Confirm Order',
+            component: <ConfirmOrder />,
+            buttonText: 'Proceed to Payment'
+        },
+        {
+            label: 'Checkout',
+            component: <Checkout />
+        },
+
     ];
 
-    const nextStep = () => {
+    const nextStep = async () => {
+        const step = steps[currentStep];
+
+        if (step.onNext) {
+            step.onNext()
+        }
+
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         }
-    };
+    }
 
     const prevStep = () => {
         if (currentStep > 0) {
@@ -126,44 +258,69 @@ const CheckoutSteps = () => {
         }
     };
 
-    return (
-        <div className="container my-5">
-            <h2>Checkout Process</h2>
+    const handleConfirmOrder = () => {
+        setCurrentStep(currentStep + 1);
+    };
 
-            <Row className="mb-4">
-                <Col>
-                    <ProgressBar
-                        now={((currentStep + 1) / steps.length) * 100}
-                        label={`${currentStep + 1} of ${steps.length}`}
-                    />
-                </Col>
-            </Row>
+    useEffect(() => {
+        console.log("Use effect Ran"); // DEBUG *******
+        console.log(`Address: ${address}`);
 
-            <div className="step-content">
-                {steps[currentStep].component}
-            </div>
+        const step = steps[currentStep];
+        if (step.canProceed) {
+            const canProceedNow = step.canProceed();
+            setCanProceedState(canProceedNow);
+        }
 
-            <Row className="mt-4">
-                <Col className="d-flex justify-content-between">
-                    <Button
-                        variant="secondary"
-                        onClick={prevStep}
-                        disabled={currentStep === 0}
-                    >
-                        Back
-                    </Button>
-                    <Button
-                        variant="primary"
-                        onClick={nextStep}
-                        disabled={currentStep === steps.length - 1}
-                    >
-                        Next
-                    </Button>
-                </Col>
-            </Row>
+}, [address, currentStep]);
+
+// Determine the button text based on the current step
+const getButtonText = () => steps[currentStep].buttonText || 'Next';
+
+return (
+    <div className="container my-5">
+        <h2>Checkout Process</h2>
+
+
+        <Row className="mb-4">
+            <Col>
+                <ProgressBar
+                    now={((currentStep + 1) / steps.length) * 100}
+                    label={`${currentStep + 1} of ${steps.length}`}
+                />
+            </Col>
+        </Row>
+
+
+        <div className="step-content">
+            {steps[currentStep].component}
         </div>
-    );
+
+
+        <Row className="mt-4">
+            <Col className="d-flex justify-content-between">
+                <Button
+                    variant="secondary"
+                    onClick={prevStep}
+                    disabled={currentStep === 0}
+                >
+                    Back
+                </Button>
+                <Button
+                    variant="primary"
+                    onClick={nextStep}
+                    disabled={!steps[currentStep].canProceed() || currentStep === steps.length - 1}
+                >
+                    {getButtonText()}
+                </Button>
+            </Col>
+        </Row>
+    </div>
+);
 };
 
 export default CheckoutSteps;
+
+
+
 */
