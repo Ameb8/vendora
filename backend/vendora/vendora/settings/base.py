@@ -52,7 +52,7 @@ INSTALLED_APPS = [
     'page_design',
     'payments',
     'subscriptions',
-    'shipments',
+    'shipments.apps.ShipmentsConfig',
 ]
 SITE_ID = 1
 

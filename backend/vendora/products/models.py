@@ -44,7 +44,7 @@ class Product(models.Model):
         'oz': 0.00220462,
     }
 
-    _height_conversion: dict[str, float] = {
+    _dimension_conversion_to_in: dict[str, float] = {
         'in': 1.0,
         'cm': 1.0 / 2.54
     }

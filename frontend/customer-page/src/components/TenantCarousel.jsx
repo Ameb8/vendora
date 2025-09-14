@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './TenantCarousel.css';
 
-function TenantCarousel({ parentWidth = '100%' }) {
+function TenantCarousel({ parentWidth = '100%', scrollRef }) {
     const [tenants, setTenants] = useState([]);
     const navigate = useNavigate();
 
@@ -20,7 +20,7 @@ function TenantCarousel({ parentWidth = '100%' }) {
 
     return (
         <div className="tenant-carousel-container" style={{ width: parentWidth }}>
-            <div className="tenant-carousel d-flex overflow-auto">
+            <div className="tenant-carousel d-flex overflow-auto" ref={scrollRef}>
                 {tenants.map((tenant) => (
                     <div
                         key={tenant.id}

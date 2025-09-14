@@ -29,7 +29,22 @@ const CheckoutSteps = () => {
     const createOrder = async () => {
         // DEBUG ****
         console.log(address)
+        for (const key in address) {
+            if (address.hasOwnProperty(key)) {
+                console.log(`${key}: ${address[key]}`);
+            }
+        }
         try {
+            // DEBUG *******
+            console.log("Shipping address ID:", address.id);
+            console.log("Request body:", JSON.stringify({
+                email,
+                shipping_address: address.id,
+                tenant: tenant.id,
+                items,
+            }));
+            // END DEBUG ***
+
             const res = await fetch(`${baseURL}/orders/create-order/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

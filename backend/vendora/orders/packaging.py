@@ -13,7 +13,7 @@ def get_min_package(sizes: list[Size], max_dim_limit=200, step=5) -> Optional[di
     max_w = max(size.width_in for size in sizes)
     max_h = max(size.height_in for size in sizes)
     max_d = max(size.depth_in for size in sizes)
-    total_weight = sum(size.weight_oz for size in sizes)
+    total_weight = sum(size.weight_lb for size in sizes)
 
     # Start with box just large enough to fit the largest item
     width = max_w

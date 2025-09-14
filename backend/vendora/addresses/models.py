@@ -25,3 +25,5 @@ class Address(models.Model):
         if self.apartment_address:
             address["street2"] = self.apartment_address
 
+        return address
+

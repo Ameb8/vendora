@@ -1,0 +1,27 @@
+.shop-tenant-section {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.shop-tenant-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.arrow-btn {
+    border: none;
+    background: #ffffff;
+    border-radius: 50%;
+    padding: 0.4rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.arrow-btn:hover {
+    background-color: #e9ecef;
+}

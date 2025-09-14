@@ -1,6 +1,7 @@
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import TenantCarousel from './TenantCarousel';
+import ShopTenant from "../components/ShopTenant";
+//import TenantCarousel from './TenantCarousel';
 import TenantSignup from '../tenant_signup/TenantSignup.jsx';
 import Banner from './Banner';
 
@@ -9,8 +10,10 @@ function HomePage() {
     return (
         <div className="container mt-4 text-center">
             <Banner />
-            <TenantSignup />
-            <TenantCarousel parentWidth="100%" />
+            {/*<TenantSignup />
+            <TenantCarousel parentWidth="100%" />*/}
+
+            <ShopTenant />
 
             <div className="mt-5">
                 <Button
