@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
+
 import Appbar from "./Appbar.jsx";
 import Navbar from "./Navbar.jsx";
 import UserDropdown from '../user/UserDropdown.jsx';
-import LoginDropdown from '../user/LoginDropdown.jsx';
+import Login from './Login.jsx';
+
 import { useUser } from "../contexts/UserContext.jsx";
 
 function Header() {
@@ -15,6 +17,7 @@ function Header() {
         const handleClickOutside = (e) => {
             if (
                 dropdownOpen &&
+                !isModalOpen &&
                 dropdownRef.current &&
                 !dropdownRef.current.contains(e.target) &&
                 !triggerRef.current?.contains(e.target)
@@ -44,7 +47,7 @@ function Header() {
                     {isAuthenticated ? (
                         <UserDropdown onClose={() => setDropdownOpen(false)} />
                     ) : (
-                        <LoginDropdown onLogin={() => setDropdownOpen(false)} />
+                        <Login />
                     )}
                 </div>
             )}

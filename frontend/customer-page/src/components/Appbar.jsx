@@ -13,7 +13,8 @@ import SearchIcon from "../icons/SearchIcon.jsx";
 import FilterIcon from "../icons/FilterIcon.jsx";
 import UserIcon from '../user/UserIcon.jsx';
 import UserDropdown from '../user/UserDropdown.jsx';
-import LoginDropdown from '../user/LoginDropdown.jsx';
+//import LoginDropdown from '../user/LoginDropdown.jsx';
+import Login from './Login';
 
 import { Button, Form, InputGroup } from "react-bootstrap";
 import './Appbar.css';
@@ -139,7 +140,7 @@ function Appbar({ onUserIconClick, userIconRef }) {
                     {isAuthenticated ? (
                         <UserDropdown onClose={() => setDropdownOpen(false)} />
                     ) : (
-                        <LoginDropdown onLogin={() => setDropdownOpen(false)} />
+                        <Login />
                     )}
                 </div>
             )}

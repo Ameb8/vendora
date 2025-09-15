@@ -10,7 +10,7 @@ const Login = () => {
     const [showRegister, setShowRegister] = useState(false);
 
     return (
-        <div className="text-center d-flex flex-column align-items-center gap-3">
+        <div className="text-center d-flex flex-column align-items-center gap-3 bg-white p-3 rounded shadow">
             {/* Login button */}
             <Button
                 className="google-style-btn"
