@@ -36,6 +36,9 @@ export const UserProvider = ({ children }) => {
         try {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/accounts/me/`);
             setUser(response.data);
+
+            // DEBUG *******
+            console.log("User after login", user);
         } catch (error) {
             console.error('Login fetch user failed', error);
         }

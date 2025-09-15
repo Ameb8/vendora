@@ -1,4 +1,17 @@
+import Login from '../../../components/Login.jsx';
+
+function AdminLogin() {
+    return (
+        <Login />
+    )
+}
+
+export default AdminLogin;
+
+
+/*
 import { useState } from 'react';
+
 import { useUser } from '../contexts/UserContext';
 
 function AdminLogin({ onLoginSuccess }) {
@@ -25,7 +38,7 @@ function AdminLogin({ onLoginSuccess }) {
             const data = await response.json();
 
             if (response.ok) {
-                localStorage.setItem('token', data.token); // Get JWT Token
+                localStorage.setItem('token', data.token); // Get Token
                 const success = await login(); // Login result
 
                 if (!success?.is_staff) { // No admin privileges
@@ -79,3 +92,4 @@ function AdminLogin({ onLoginSuccess }) {
 }
 
 export default AdminLogin;
+*/

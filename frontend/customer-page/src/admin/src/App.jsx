@@ -1,8 +1,11 @@
 import { useState } from 'react'
+
 import './App.css'
+
 import AdminLogin from "./components/Login";
-import { useUser } from './contexts/UserContext';
 import HomePage from './components/HomePage';
+import { useUser } from '../../contexts/UserContext.jsx';
+
 
 function App() {
     const { user, loading } = useUser();
@@ -10,7 +13,7 @@ function App() {
 
     return (
         <div>
-            {user?.is_staff ? <HomePage /> : <AdminLogin />}
+            {user ? <HomePage /> : <AdminLogin />}
         </div>
     )
 }

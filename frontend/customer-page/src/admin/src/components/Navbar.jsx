@@ -53,7 +53,7 @@ function Navbar() {
                     >
                         <span className="navbar-toggler-icon"></span>
                     </button>
-    
+
                     {/* User Icon */}
                     <div
                         ref={iconRef}
