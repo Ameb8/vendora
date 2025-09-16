@@ -17,10 +17,20 @@ const ProfilePage = () => {
     useEffect(() => {
         const fetchTenants = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/tenants/public/`);
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/tenants/my-tenants/`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${localStorage.getItem('token')}`,
+                    }
+                });
+
                 if (!response.ok) throw new Error('Failed to fetch tenants');
                 const data = await response.json();
                 setTenants(data);
+
+                // DEBUG *******
+                console.log(`tenants:\n ${tenants}`);
             } catch (error) {
                 setTenantsError(error.message);
             } finally {
@@ -92,13 +102,14 @@ const ProfilePage = () => {
                                     <Dropdown.Toggle variant="secondary" id="dropdown-tenants">
                                         Select Business
                                     </Dropdown.Toggle>
+
                                     <Dropdown.Menu>
                                         {tenants.map((tenant) => (
                                             <Dropdown.Item
                                                 key={tenant.id}
                                                 onClick={() => {
-                                                    setCurrentTenantExternal(tenant); // Set selected tenant
-                                                    navigate('/admin');               // Navigate to /admin
+                                                    setCurrentTenantExternal(tenant);
+                                                    navigate('/admin');
                                                 }}
                                             >
                                                 {tenant.name}
