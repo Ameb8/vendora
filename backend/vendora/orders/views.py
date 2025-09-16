@@ -81,6 +81,7 @@ class CreateOrderView(APIView):
             )
             order.stripe_payment_intent_id = intent.id
             '''
+
             order.save()
 
             return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
