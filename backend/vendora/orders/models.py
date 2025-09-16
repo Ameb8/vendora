@@ -91,6 +91,9 @@ class Order(models.Model):
 
         return get_min_package(product_sizes)
 
+    def estimate_shipping(self) -> None:
+        self.shipping_cost = 1000
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
@@ -108,6 +111,7 @@ class PhoneAlert(models.Model):
         ('sprint', 'Sprint'),
         ('boost', 'Boost'),
     ]
+
 
     number = PhoneNumberField(max_length=20)
     carrier = models.CharField(max_length=20, choices=CARRIER_CHOICES)

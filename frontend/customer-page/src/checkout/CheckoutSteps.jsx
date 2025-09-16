@@ -18,6 +18,7 @@ const CheckoutSteps = () => {
     const { cart } = useCart()
     const { tenant } = useTenant();
     const { user } = useUser();
+    const { setOrder } = useCheckout();
 
     const email = 'test@test.com';
     const baseURL = `${import.meta.env.VITE_API_URL}`
@@ -61,6 +62,7 @@ const CheckoutSteps = () => {
             }
 
             const data = await res.json();
+            setOrder(data);
             console.log(`\n\nOrder Object Created:\n\n${data}\n\n`);
         } catch (err) {
             console.error(err);

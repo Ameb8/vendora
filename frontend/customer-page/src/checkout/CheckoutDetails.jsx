@@ -5,12 +5,14 @@ import Checkout from '../components/Checkout.jsx';
 
 import { useUser } from '../contexts/UserContext';
 import { useTenant } from '../contexts/TenantContext.jsx';
+import { useCheckout } from './CheckoutContext.jsx';
 
 const CheckoutDetails = () => {
     const [selectedAddress, setSelectedAddress] = useState(null);
 
     const { user } = useUser();
     const { tenant } = useTenant
+    const { order } = useCheckout();
 
     const handleAddressSelect = (address) => {
         setSelectedAddress(address);

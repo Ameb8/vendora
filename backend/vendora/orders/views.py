@@ -72,7 +72,7 @@ class CreateOrderView(APIView):
         if serializer.is_valid():
             order = serializer.save()
 
-            # Optional: create Stripe PaymentIntent
+            # Create Stripe PaymentIntent
             intent = stripe.PaymentIntent.create(
                 amount=order.total_amount,
                 currency='usd',
@@ -84,7 +84,8 @@ class CreateOrderView(APIView):
             return Response({
                 'order_id': order.id,
                 'stripe_client_secret': intent.client_secret,
-                'order_code': str(order.order_code)
+                'order_code': str(order.order_code),
+                'shipping_cost': str(order.shipping_cost)
             }, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

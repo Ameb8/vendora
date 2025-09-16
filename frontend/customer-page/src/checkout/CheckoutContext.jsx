@@ -8,6 +8,7 @@ export const useCheckout = () => {
 
 export const CheckoutProvider = ({ children }) => {
     const [address, setAddress] = useState(null);
+    const [order, setOrder] = useState(null);
 
 
     const updateAddress = (newAddress) => {
@@ -17,6 +18,8 @@ export const CheckoutProvider = ({ children }) => {
     const value = {
         address,
         updateAddress,
+        order,
+        setOrder,
     };
 
     return (

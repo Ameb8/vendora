@@ -43,10 +43,17 @@ class OrderCreateSerializer(serializers.ModelSerializer):
 
         total_cents = int((total * 100).to_integral_value(rounding=ROUND_HALF_UP))
 
-        # Now we know the total, so we can create the order
-        order = Order.objects.create(total_amount=total_cents, **validated_data)
+        # Instantiate Order object
+        order = Order(total_amount=total_cents, **validated_data)
 
-        # Then add order items
+        # Calculate shipping cost
+        order.estimate_shipping()
+
+
+        # Create the order in database
+        order.save()
+
+        # Add order items
         for item in items_data:
             product = Product.objects.get(id=item['product_id'])
             OrderItem.objects.create(order=order, product=product, quantity=item['quantity'])

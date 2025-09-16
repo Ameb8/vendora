@@ -48,6 +48,40 @@ class PageDesignViewSet(ModelViewSet):
             request.data['tenant'] = tenant.id
         return super().create(request, *args, **kwargs)
 
+    def partial_update(self, request, *args, **kwargs):
+        tenant_slug = self.kwargs.get('tenant_slug')
+
+        try:
+            instance = self.get_object()
+        except NotFound:
+            # Create new PageDesign if not found
+            try:
+                tenant = Tenant.objects.get(slug=tenant_slug)
+            except Tenant.DoesNotExist:
+                return Response({'detail': 'Tenant not found'}, status=400)
+
+            # Default values for missing fields
+            data = {
+                'tenant': tenant.id,
+                'about_us_title': '',
+                'about_us_body': '',
+                'contact_num': '',
+                'contact_mail': '',
+            }
+
+            # Overwrite defaults with any data passed in
+            data.update(request.data)
+
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            instance = serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        # Standard partial update flow
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        return Response(serializer.data)
 
 class IsStaffOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):

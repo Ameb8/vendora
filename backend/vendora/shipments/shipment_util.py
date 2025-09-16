@@ -51,4 +51,46 @@ def get_box_size(order: Order) -> Size:
     return find_min_box(get_objs(order))
 
 
+def usps_shipping(from_zip: str, to_zip: str, weight_lbs: int, weight_oz: int, len: int, width: int, height: int) -> dict[str, any]:
+    xml_request = f"""
+    <RateV4Request USERID="{USPS_USER_ID}">
+        <Revision>2</Revision>
+        <Package ID="1ST">
+            <Service>ALL</Service>
+            <ZipOrigination>{from_zip}</ZipOrigination>
+            <ZipDestination>{to_zip}</ZipDestination>
+            <Pounds>{weight_lbs}</Pounds>
+            <Ounces>{weight_oz}</Ounces>
+            <Container>RECTANGULAR</Container>
+            <Size>REGULAR</Size>
+            <Width>{width}</Width>
+            <Length>{length}</Length>
+            <Height>{height}</Height>
+            <Machinable>true</Machinable>
+        </Package>
+    </RateV4Request>
+    """
+
+    params = {
+        'API': 'RateV4',
+        'XML': xml_request
+    }
+
+    response = requests.get(USPS_API_URL, params=params)
+
+    if response.status_code != 200:
+        raise Exception(f"USPS API error: {response.status_code}")
+
+    rates = []
+    root = ET.fromstring(response.content)
+    for postage in root.findall('.//Postage'):
+        service_name = postage.find('MailService').text
+        rate = postage.find('Rate').text
+        rates.append({
+            'service': service_name,
+            'rate': float(rate)
+        })
+
+    return rates
+
 
