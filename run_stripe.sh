@@ -14,14 +14,15 @@ if [ ! -f "$WEBHOOK_SECRET_FILE" ]; then
   echo "Stripe webhook secret written to $WEBHOOK_SECRET_FILE"
 fi
 
-# Listen for subscription events
+# Forward customer.subscription.created and invoice.payment_failed to the subscriptions webhook
 stripe listen \
   --forward-to "http://host.docker.internal:8000/subscriptions/stripe/webhook/" \
   --events customer.subscription.created,invoice.payment_failed &
 
-# Listen for payment events
+# Forward payment_intent.succeeded and payment_intent.payment_failed to the payments webhook
 stripe listen \
   --forward-to "http://host.docker.internal:8000/payments/stripe/webhook/" \
   --events payment_intent.succeeded,payment_intent.payment_failed &
-
+  
+# Wait for background processes to finish
 wait

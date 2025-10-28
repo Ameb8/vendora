@@ -71,8 +71,8 @@ const CurrentSubscription = () => {
             <Card.Body>
                 <Card.Title>Current Subscription</Card.Title>
                 <Card.Text>
-                    <strong>Plan:</strong> {subscription.plan.name} <br />
-                    <strong>Description:</strong> {subscription.plan.description} <br />
+                    <strong>Plan:</strong> {subscription.plan?.name || "N/A"} <br />
+                    <strong>Description:</strong> {subscription.plan?.description || "N/A"} <br />
                     <strong>Status:</strong>{" "}
                     <span
                         className={
