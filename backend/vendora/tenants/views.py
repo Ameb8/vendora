@@ -25,6 +25,13 @@ class TenantViewSet(viewsets.ModelViewSet):
     serializer_class = TenantSerializer
     permission_classes = [IsTenantAdmin]
 
+    def get_permissions(self):
+        # Allow *any authenticated* user to create a Tenant
+        if self.action == 'create':
+            return [permissions.IsAuthenticated()]
+        # All other actions require TenantAdmin
+        return [IsTenantAdmin()]
+
     def get_queryset(self):
         user = self.request.user
         if not user.is_authenticated:

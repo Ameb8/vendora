@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import BasicInfo from './steps/BasicInfo.jsx';
@@ -8,6 +9,7 @@ import ContactInfo from "./steps/ContactInfo.jsx";
 const LOCAL_STORAGE_KEY = 'tenant_data';
 
 const TenantSignup = () => {
+    const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [tenant, setTenant] = useState({
         name: '',
@@ -20,6 +22,47 @@ const TenantSignup = () => {
         accentColor: '',
 
     });
+
+    const createTenant = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/tenants/view/`, { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({
+                    name: tenant.name,
+                    slug: tenant.slug,
+                    email: tenant.email,
+                    phone: tenant.phone,
+                    color_primary: tenant.primaryColor,
+                    color_secondary: tenant.secondaryColor,
+                    color_accent: tenant.accentColor,
+                    domain: tenant.slug
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("Failed to create tenant:", errorData);
+                alert("Error creating tenant: " + (errorData.detail || "Unknown error"));
+                return;
+            }
+
+            const data = await response.json();
+            console.log("Tenant created:", data);
+
+            // Clear local storage and navigate away
+            localStorage.removeItem(LOCAL_STORAGE_KEY);
+            navigate('/admin/tutorials');
+
+        } catch (err) {
+            console.error("Error creating tenant:", err);
+            alert("Network or server error while creating tenant");
+        }
+    };
+
 
     useEffect(() => {
         const storedTenant = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -36,7 +79,15 @@ const TenantSignup = () => {
         setTenant((prev) => ({ ...prev, ...data }));
     };
 
-    const nextStep = () => setStep((prev) => prev + 1);
+    const nextStep = () => {
+        if (step === 3) { // Redirect when steps completed
+            createTenant();
+            navigate('/admin/tutorials'); 
+        } else {
+            setStep((prev) => prev + 1);
+        }
+    };
+    
     const prevStep = () => setStep((prev) => prev - 1);
 
     return (

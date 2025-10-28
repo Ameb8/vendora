@@ -67,7 +67,6 @@ function CreateProductForm() {
         appendDefaultFormData(payload);
 
         try {
-            console.log(`Token: ${token}`);
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {

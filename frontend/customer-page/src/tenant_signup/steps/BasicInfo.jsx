@@ -3,10 +3,13 @@ import { useState, useEffect } from 'react';
 const BasicInfo = ({ data, update, nextStep }) => {
     const [name, setName] = useState(data.name || '');
     const [logo, setLogo] = useState(data.logo || null); // logo as base64 or URL
+    const [slug, setSlug] = useState(data.slug || '');
+
 
     useEffect(() => {
         setName(data.name || '');
         setLogo(data.logo || null);
+        setSlug(data.slug || '');
     }, [data]);
 
     const handleLogoChange = (e) => {
@@ -22,7 +25,7 @@ const BasicInfo = ({ data, update, nextStep }) => {
     };
 
     const handleNext = () => {
-        update({ name, logo });
+        update({ name, slug, logo });
         nextStep();
     };
 
@@ -37,6 +40,20 @@ const BasicInfo = ({ data, update, nextStep }) => {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
+            </div>
+
+            <div className="mb-4">
+                <label className="form-label">Tenant Slug</label>
+                <input
+                    type="text"
+                    className="form-control"
+                    placeholder="e.g., acme-corp"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                />
+                <small className="text-muted">
+                    This will be used in your tenant URL. Must be unique.
+                </small>
             </div>
 
             <div className="mb-4">
