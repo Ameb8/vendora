@@ -1,4 +1,7 @@
 from rest_framework import serializers
+
+from subscriptions.serializers import SubscriptionSerializer
+
 from .models import Tenant, AdminAccessRequest
 
 class TenantSerializer(serializers.ModelSerializer):
@@ -30,6 +33,19 @@ class TenantPublicSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         return obj.image.url if obj.image else None
+
+class MyTenantsSerializer(TenantPublicSerializer):
+    subscription = serializers.SerializerMethodField()
+
+    class Meta(TenantPublicSerializer.Meta):
+        fields = TenantPublicSerializer.Meta.fields + ['subscription']
+
+    def get_subscription(self, obj):
+        # Use the Tenant model's `current_subscription` property
+        subscription = obj.current_subscription
+        if subscription:
+            return SubscriptionSerializer(subscription).data
+        return None
 
 class AdminAccessRequestSerializer(serializers.ModelSerializer):
     class Meta:

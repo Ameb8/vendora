@@ -20,7 +20,10 @@
 }
 
 .vertical-navbar .btn-home {
-    margin-top: 1rem;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
 }
 
 .vertical-navbar button {

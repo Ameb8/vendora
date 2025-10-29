@@ -16,6 +16,7 @@ const TenantHeader = () => {
             <div style={{ fontSize: "0.9rem", color: "#666" }}>
                 <p>{currentTenant.phone}</p>
                 <p>{currentTenant.email}</p>
+                <p>{currentTenant.subscription.current_period_end}</p>
             </div>
         </header>
     );

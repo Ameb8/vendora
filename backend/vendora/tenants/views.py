@@ -14,7 +14,7 @@ import logging
 import stripe
 
 from .models import Tenant, TenantAdmin, AdminAccessRequest
-from .serializers import TenantSerializer, TenantPublicSerializer, AdminAccessRequestSerializer
+from .serializers import TenantSerializer, TenantPublicSerializer, MyTenantsSerializer, AdminAccessRequestSerializer
 from .permissions import IsTenantAdmin, IsTenantAdminForAccessRequest
 
 
@@ -147,7 +147,7 @@ class AdminAccessRequestViewSet(viewsets.ModelViewSet):
 
 
 class MyTenantView(generics.ListAPIView):
-    serializer_class = TenantPublicSerializer
+    serializer_class = MyTenantsSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):

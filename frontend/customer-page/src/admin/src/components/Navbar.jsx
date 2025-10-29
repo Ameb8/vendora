@@ -8,6 +8,7 @@ import './Navbar.css';
 
 import UserIcon from '../../../user/UserIcon.jsx';
 import UserDropdown from '../../../user/UserDropdown.jsx';
+import HomeIcon from '../../../icons/HomeIcon.jsx';
 
 function Navbar() {
     const navigate = useNavigate();
@@ -57,7 +58,11 @@ function Navbar() {
                 <button className="btn-home" onClick={() => {
                     navigate('home');
                 }}>
-                    🏠
+                    <HomeIcon
+                        width={24}
+                        height={24}
+                        style={{ backgroundColor: 'transparent' }}
+                    />
                 </button>
             </div>
 
