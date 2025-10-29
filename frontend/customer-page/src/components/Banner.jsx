@@ -13,6 +13,7 @@ import Login from './Login';
 
 const Banner = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const dropdownRef = useRef(null);
     const userIconRef = useRef(null);
     const { isAuthenticated } = useUser();
