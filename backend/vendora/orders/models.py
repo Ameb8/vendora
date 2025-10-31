@@ -15,21 +15,6 @@ from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from shipments.models import Shipment
 
-'''
-class Address(models.Model):
-    full_name = models.CharField(max_length=255, null=True, blank=True)
-    street_address = models.CharField(max_length=255)
-    apartment_address = models.CharField(max_length=255, blank=True, null=True)
-    city = models.CharField(max_length=100)
-    state = models.CharField(max_length=100)
-    postal_code = models.CharField(max_length=20)
-    country = models.CharField(max_length=100)
-    phone_number = models.CharField(max_length=20, null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.full_name}, {self.street_address}, {self.city}"
-'''
-
 
 class Order(models.Model):
     # User info

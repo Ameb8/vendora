@@ -1,0 +1,24 @@
+.admin-header {
+    height: 50px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    background-color: #212529; /* Bootstrap dark tone */
+}
+
+.tenant-selector-wrapper select {
+    background-color: #343a40;
+    color: white;
+    border: 1px solid #495057;
+    font-size: 0.9rem;
+    height: 32px;
+    padding: 0 0.5rem;
+}
+
+.tenant-selector-wrapper select:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.1rem rgba(13, 110, 253, 0.25);
+}

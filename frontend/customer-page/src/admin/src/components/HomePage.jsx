@@ -15,6 +15,7 @@ import SelectTenant from './SelectTenant';
 import TenantDropdown from "./TenantDropdown.jsx";
 import Tutorials from "../tutorials/Tutorials.jsx";
 import TenantHome from "./TenantHome.jsx";
+import AdminHeader from "./AdminHeader.jsx";
 
 function HomeContent() {
     const { tenants, currentTenant, setCurrentTenant, loading } = useTenant();
@@ -45,9 +46,9 @@ function HomeContent() {
 function HomePage() {
     return (
         <TenantProvider>
-                <Navbar />
-                <TenantDropdown />
-                <HomeContent />
+            <AdminHeader />
+            <Navbar />
+            <HomeContent />
         </TenantProvider>
     );
 }
