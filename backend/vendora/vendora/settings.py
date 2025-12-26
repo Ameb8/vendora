@@ -7,9 +7,18 @@ import cloudinary
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+DEBUG = True
+
+ALLOWED_HOSTS = [
+    "localhost",
+    #"127.0.0.1",
+    #"0.0.0.0",
+    #"192.168.1.78",
+]
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key")
 
-FRONTEND_URL = os.getenv("FRONTEND_URL")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "")
 
 INSTALLED_APPS = [
     # Django built-in apps
@@ -38,7 +47,6 @@ INSTALLED_APPS = [
 
     # 3rd-party extensions
     'corsheaders',
-    'sslserver',
     'ordered_model',
     'cloudinary',
     'cloudinary_storage',
@@ -82,8 +90,8 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
-ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
+#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
+#ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS if host.strip()]
 
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', '').split(',')
 CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in CSRF_TRUSTED_ORIGINS if origin.strip()]
@@ -110,32 +118,32 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
         'APP': {
-            'client_id': os.getenv('GOOGLE_PUBLIC'),
-            'secret': os.getenv('GOOGLE_PRIVATE'),
+            'client_id': os.getenv('GOOGLE_PUBLIC', ''),
+            'secret': os.getenv('GOOGLE_PRIVATE', ''),
             'key': ''
         }
     }
 }
 
 
-STRIPE_SECRET_KEY = os.getenv('STRIPE_PRIVATE')
-STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC')
-STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET")
+STRIPE_SECRET_KEY = os.getenv('STRIPE_PRIVATE', '')
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC', '')
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', '')
 
 
 cloudinary.config(
-    cloud_name=os.getenv('CLOUDINARY_NAME'),
-    api_key=os.getenv('CLOUDINARY_PUBLIC'),
-    api_secret=os.getenv('CLOUDINARY_SECRET')
+    cloud_name=os.getenv('CLOUDINARY_NAME', ''),
+    api_key=os.getenv('CLOUDINARY_PUBLIC', ''),
+    api_secret=os.getenv('CLOUDINARY_SECRET', '')
 )
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('CLOUDINARY_NAME'),
-    'API_KEY': os.getenv('CLOUDINARY_PUBLIC'),
-    'API_SECRET': os.getenv('CLOUDINARY_SECRET')
+    'CLOUD_NAME': os.getenv('CLOUDINARY_NAME', ''),
+    'API_KEY': os.getenv('CLOUDINARY_PUBLIC', ''),
+    'API_SECRET': os.getenv('CLOUDINARY_SECRET', '')
 }
 
-SHIPPO_KEY = os.getenv('SHIPPO_KEY')
+SHIPPO_KEY = os.getenv('SHIPPO_KEY', '')
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
@@ -190,4 +198,26 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'DEBUG',
     },
+}
+
+print("DEBUG =", DEBUG)
+print("ALLOWED_HOSTS =", ALLOWED_HOSTS)
+
+SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = False
+
+
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('DB_NAME', ''),
+        'USER': os.getenv('DB_USER', ''),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', '3306'),
+    }
 }

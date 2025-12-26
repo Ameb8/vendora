@@ -6,10 +6,19 @@ load_dotenv()
 
 DEBUG = True
 
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    "192.168.1.78",
+]
+
 SESSION_COOKIE_SAMESITE = 'None'
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = False
+
+
 
 
 DATABASES = {

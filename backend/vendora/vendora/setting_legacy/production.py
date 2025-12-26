@@ -3,7 +3,15 @@ import dj_database_url
 import os
 from dotenv import load_dotenv
 
-DEBUG = False
+DEBUG = True
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    "192.168.1.78",
+]
+
 load_dotenv()
 
 # Security settings
@@ -23,4 +31,6 @@ DATABASES = {
         ssl_require=True
     )
 }
+
+# Installed:     'sslserver',
 
