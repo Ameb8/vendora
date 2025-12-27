@@ -62,4 +62,13 @@ services:
       - ./backend/vendora:/app
     command: python manage.py test
 
+  backend_check:
+    build:
+      context: ./backend/vendora
+    volumes:
+      - ./backend/vendora:/app
+    command: python -c "import os; os.environ.setdefault('DJANGO_SETTINGS_MODULE','vendora.settings'); import django; django.setup(); print('All dependencies OK')"
+
+
+
 

@@ -5,7 +5,7 @@ import { Container, Card, Row, Col, Button, Spinner, Dropdown } from 'react-boot
 import { FaUserCircle, FaEnvelope, FaSignOutAlt, FaUserShield, FaBuilding } from 'react-icons/fa';
 
 import { useUser } from '../contexts/UserContext';
-import { setCurrentTenantExternal } from '../tenantManager';
+// import { setCurrentTenantExternal } from '../tenantManager';
 
 const ProfilePage = () => {
     const { user, loading, logout } = useUser();

@@ -11,9 +11,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "localhost",
-    #"127.0.0.1",
-    #"0.0.0.0",
-    #"192.168.1.78",
+    "127.0.0.1",
+    "0.0.0.0",
+    "192.168.1.78",
+    "host.docker.internal",
 ]
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key")
@@ -203,9 +204,9 @@ LOGGING = {
 print("DEBUG =", DEBUG)
 print("ALLOWED_HOSTS =", ALLOWED_HOSTS)
 
-SESSION_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SECURE = False
 
 

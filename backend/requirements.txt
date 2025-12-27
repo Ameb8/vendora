@@ -83,8 +83,6 @@ plotly==6.5.0
     # via -r requirements.in
 py3dbp==1.1.2
     # via -r requirements.in
-pyjwt==2.10.1
-    # via -r requirements.in
 python-dotenv==1.2.1
     # via -r requirements.in
 requests==2.32.5

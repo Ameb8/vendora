@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from rest_framework import generics
 from rest_framework.generics import RetrieveAPIView
@@ -95,7 +96,13 @@ def stripe_webhook(request):
         customer_id = sub_data['customer']
         stripe_subscription_id = sub_data['id']
         plan_price_id = sub_data['items']['data'][0]['price']['id']
-        current_period_end = datetime.fromtimestamp(sub_data['items']['data'][0]['current_period_end'])
+        #current_period_end = datetime.fromtimestamp(sub_data['items']['data'][0]['current_period_end'])
+
+        current_period_end = datetime.fromtimestamp(
+            sub_data['current_period_end'],
+            tz=timezone.utc
+        )
+
 
         tenant = Tenant.objects.get(stripe_customer_id=customer_id)
         plan = SubscriptionPlan.objects.get(stripe_price_id=plan_price_id)
@@ -104,6 +111,7 @@ def stripe_webhook(request):
             tenant=tenant,
             stripe_subscription_id=stripe_subscription_id,
             defaults={
+                'stripe_customer_id': customer_id,
                 'plan': plan,
                 'current_period_end': current_period_end,
                 'status': sub_data['status'],

@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 
 import logging
 
-import shippo
+#import shippo
 # from shippo.error import ShippoError
 
 from vendora.permissions import IsAdminOrReadOnly

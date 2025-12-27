@@ -1,0 +1,42 @@
+Django>=5.2,<5.3
+
+# Auth
+django-allauth
+dj-rest-auth
+
+# API
+djangorestframework
+django-filter
+drf-nested-routers
+
+# Server
+gunicorn
+
+# Utils
+python-dotenv
+requests
+stripe
+cloudinary
+django-cloudinary-storage
+django-cors-headers
+django-countries
+django-extensions
+django-ordered-model
+django-phonenumber-field
+django-sslserver
+
+# Validation / misc
+email-validator
+phonenumbers
+pillow
+plotly
+
+# Database
+#mysqlclient>=2.2
+
+py3dbp
+
+PyJWT>=2.8
+
+
+

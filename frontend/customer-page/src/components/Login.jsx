@@ -38,7 +38,13 @@ const Login = () => {
             </Modal>
 
             {/* Register Modal */}
-            <Modal show={showRegister} onHide={() => setShowRegister(false)} centered>
+            <Modal 
+                show={showRegister} 
+                onHide={() => setShowRegister(false)} 
+                backdrop="static"
+                keyboard={false}
+                centered
+            >
                 <Modal.Header closeButton>
                     <Modal.Title>Create Account</Modal.Title>
                 </Modal.Header>

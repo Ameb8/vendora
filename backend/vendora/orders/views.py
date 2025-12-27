@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 import stripe
-import shippo
+# import shippo
 import json
 
 from products.models import Product

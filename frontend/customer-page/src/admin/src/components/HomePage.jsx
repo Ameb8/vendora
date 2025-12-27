@@ -46,7 +46,7 @@ function HomeContent() {
 function HomePage() {
     return (
         <TenantProvider>
-            <AdminHeader />
+            {/*<AdminHeader />*/}
             <Navbar />
             <HomeContent />
         </TenantProvider>
