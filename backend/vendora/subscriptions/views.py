@@ -91,18 +91,24 @@ def stripe_webhook(request):
     logger.warning("\n\n\n\n📦 Stripe Event Payload:\n%s", json.dumps(event, indent=2))
     # END DEBUG ***
 
-    if event['type'] == 'customer.subscription.created':
+    event_type = event['type']
+
+    if event_type.startswith("invoice.") or event_type.startswith("payment_intent."):
+        return Response(status=200)
+
+    if event_type == 'customer.subscription.created':
         sub_data = event['data']['object']
+
+        period_end = sub_data.get('current_period_end')
+        current_period_end = (
+            datetime.fromtimestamp(period_end, tz=timezone.utc)
+            if period_end
+            else None
+        )
+
         customer_id = sub_data['customer']
         stripe_subscription_id = sub_data['id']
         plan_price_id = sub_data['items']['data'][0]['price']['id']
-        #current_period_end = datetime.fromtimestamp(sub_data['items']['data'][0]['current_period_end'])
-
-        current_period_end = datetime.fromtimestamp(
-            sub_data['current_period_end'],
-            tz=timezone.utc
-        )
-
 
         tenant = Tenant.objects.get(stripe_customer_id=customer_id)
         plan = SubscriptionPlan.objects.get(stripe_price_id=plan_price_id)
@@ -118,9 +124,29 @@ def stripe_webhook(request):
             }
         )
 
-    elif event['type'] == 'invoice.payment_failed':
+    elif event_type == 'customer.subscription.updated':
+        sub_data = event['data']['object']
+
+        Subscription.objects.filter(
+            stripe_subscription_id=sub_data['id']
+        ).update(
+            status=sub_data['status'],
+            current_period_end=datetime.fromtimestamp(
+                sub_data['current_period_end'],
+                tz=timezone.utc
+            )
+        )
+
+    elif event_type == 'customer.subscription.deleted':
+        Subscription.objects.filter(
+            stripe_subscription_id=event['data']['object']['id']
+        ).update(status='canceled')
+
+    elif event_type == 'invoice.payment_failed':
         sub_id = event['data']['object']['subscription']
-        Subscription.objects.filter(stripe_subscription_id=sub_id).update(status='past_due')
+        Subscription.objects.filter(
+            stripe_subscription_id=sub_id
+        ).update(status='past_due')
 
     return Response(status=200)
 

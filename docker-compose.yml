@@ -45,18 +45,17 @@ services:
       - ./frontend/customer-page/.env
 
   stripe-cli:
-    profiles: ["dev"]
+    profiles: [ "dev" ]
     image: stripe/stripe-cli:latest
     container_name: stripe-cli
     env_file:
       - ./backend/vendora/.env
     volumes:
-      - ./run_stripe.sh:/app/run_stripe.sh
       - ./stripe:/app/stripe
     working_dir: /app
-    entrypoint: ["/bin/sh", "run_stripe.sh"]
-    depends_on:
-      - backend_dev
+    entrypoint: [ "/bin/sh" ]
+    command: [ "-c", "sleep infinity" ]
+
 
   backend_test:
     profiles: ["test"]
