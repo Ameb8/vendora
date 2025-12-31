@@ -50,6 +50,7 @@ def create_payment(request, order_id):
             payment_method_types=['card'],
             transfer_data={"destination": tenant.stripe_account_id},
             metadata={"payment_id": str(payment.id), "order_id": str(order.id)},
+            stripe_account=tenant.stripe_account_id,
         )
 
         logger.debug(f'Payment Intent: {intent}')
@@ -72,7 +73,7 @@ def stripe_webhook(request):
     logger.debug("Payment Webhook received")
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+    endpoint_secret = settings.STRIPE_PAYMENT_WEBHOOK_SECRET
 
     try:
         event = stripe.Webhook.construct_event(

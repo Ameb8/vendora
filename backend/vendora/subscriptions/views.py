@@ -82,7 +82,7 @@ def stripe_webhook(request):
 
     try:
         event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+            payload, sig_header, settings.STRIPE_SUBSCRIPTION_WEBHOOK_SECRET
         )
     except Exception:
         return Response(status=400)
