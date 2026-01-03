@@ -44,31 +44,18 @@ services:
     env_file:
       - ./frontend/customer-page/.env
 
-  stripe-cli-subscriptions:
+  stripe-cli:
     profiles: ["dev"]
     image: stripe/stripe-cli:latest
-    container_name: stripe-cli-subscriptions
+    container_name: stripe-cli
     env_file:
       - ./backend/vendora/.env
-    environment:
-      STRIPE_API_KEY: ${STRIPE_PRIVATE}
-    command: >
-      listen
-      --forward-to http://host.docker.internal:8000/subscriptions/stripe/webhook/
-      --events checkout.session.completed,customer.subscription.created
+    working_dir: /app
+    volumes:
+      - ./stripe:/app
+    entrypoint: ["stripe"]
+    command: ["listen", "--forward-to", "http://host.docker.internal:8000/stripe/webhook/", "--events", "checkout.session.completed,customer.subscription.created,customer.subscription.updated,customer.subscription.deleted,invoice.payment_succeeded,invoice.payment_failed,payment_intent.succeeded,payment_intent.payment_failed,transfer.created,payout.paid"]
 
-  stripe-cli-payments:
-    profiles: ["dev"]
-    image: stripe/stripe-cli:latest
-    container_name: stripe-cli-payments
-    env_file:
-      - ./backend/vendora/.env
-    environment:
-      STRIPE_API_KEY: ${STRIPE_PRIVATE}
-    command: >
-      listen
-      --forward-to http://host.docker.internal:8000/payments/stripe/webhook/
-      --events payment_intent.succeeded,invoice.payment_succeeded
 
   backend_test:
     profiles: ["test"]
