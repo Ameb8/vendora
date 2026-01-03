@@ -32,6 +32,7 @@ urlpatterns = [
     path('address/', include('addresses.urls')),
     path('subscriptions/', include('subscriptions.urls')),
     path('shipments/', include('shipments.urls')),
+    path('stripe/'. include('stripe_webhooks.urls')),
 ]
 
 # Serve media files in development

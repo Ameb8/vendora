@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'page_design',
     'payments',
     'subscriptions',
+    'stripe_webhooks',
     'shipments.apps.ShipmentsConfig',
 ]
 SITE_ID = 1
