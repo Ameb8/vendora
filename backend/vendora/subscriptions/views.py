@@ -72,9 +72,9 @@ def create_checkout_session(request):
     return Response({'checkout_url': session.url})
 
 
+@csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
-@csrf_exempt
 def stripe_webhook(request):
     payload = request.body
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
@@ -85,10 +85,12 @@ def stripe_webhook(request):
             payload, sig_header, settings.STRIPE_SUBSCRIPTION_WEBHOOK_SECRET
         )
     except Exception:
+        logger.exception("Invalid Stripe signature")
         return Response(status=400)
 
     # DEBUG *******
-    logger.warning("\n\n\n\n📦 Stripe Event Payload:\n%s", json.dumps(event, indent=2))
+    #logger.warning("\n\n\n\n📦 Stripe Event Payload:\n%s", json.dumps(event, indent=2))
+    logger.debug("\n\nStripe Subscription webhook reached")
     # END DEBUG ***
 
     event_type = event['type']
@@ -110,7 +112,14 @@ def stripe_webhook(request):
         stripe_subscription_id = sub_data['id']
         plan_price_id = sub_data['items']['data'][0]['price']['id']
 
-        tenant = Tenant.objects.get(stripe_customer_id=customer_id)
+        try:
+            tenant = Tenant.objects.get(stripe_customer_id=customer_id)
+        except Tenant.DoesNotExist:
+            logger.warning(
+                "Stripe webhook for unknown customer %s", customer_id
+            )
+            return Response(status=200)  # acknowledge anyway
+
         plan = SubscriptionPlan.objects.get(stripe_price_id=plan_price_id)
 
         Subscription.objects.update_or_create(

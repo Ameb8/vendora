@@ -31,7 +31,7 @@ def create_payment(request, order_id):
     if not tenant or not tenant.stripe_account_id:
         return Response({"detail": "Tenant is not configured for payments"}, status=400)
 
-    logger.debug(f'Order Object Found, price: {order.total_amount} cents')
+    #logger.debug(f'Order Object Found, price: {order.total_amount} cents')
 
     payment = Payment.objects.create(
         order=order,
@@ -41,7 +41,7 @@ def create_payment(request, order_id):
         status='pending'
     )
 
-    logger.debug(f'Payment Object Created: \n{payment}\n\n')
+    #logger.debug(f'Payment Object Created: \n{payment}\n\n')
 
     try:
         intent = stripe.PaymentIntent.create(
@@ -53,7 +53,7 @@ def create_payment(request, order_id):
             stripe_account=tenant.stripe_account_id,
         )
 
-        logger.debug(f'Payment Intent: {intent}')
+        #logger.debug(f'Payment Intent: {intent}')
 
         payment.stripe_payment_intent_id = intent.id
         payment.save()
@@ -61,7 +61,7 @@ def create_payment(request, order_id):
         return Response({'client_secret': intent.client_secret}, status=200)
 
     except stripe.error.StripeError as e:
-        logger.debug(f'Stripe Error: {e}')
+        #logger.debug(f'Stripe Error: {e}')
         payment.status = 'failed'
         payment.save()
         return Response({'detail': str(e)}, status=500)

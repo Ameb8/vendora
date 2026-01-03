@@ -30,7 +30,7 @@ from .serializers import (
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
-endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+endpoint_secret = settings.STRIPE_PAYMENT_WEBHOOK_SECRET
 
 @csrf_exempt
 def stripe_webhook(request):

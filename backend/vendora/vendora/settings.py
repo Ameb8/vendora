@@ -15,6 +15,8 @@ ALLOWED_HOSTS = [
     "0.0.0.0",
     "192.168.1.78",
     "host.docker.internal",
+    "backend_dev",
+    "backend_dev:8000",
 ]
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key")

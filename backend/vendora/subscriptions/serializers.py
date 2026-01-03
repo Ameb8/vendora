@@ -17,12 +17,12 @@ class SubscriptionPlanSerializer(serializers.ModelSerializer):
     def get_stripe_price(self, obj):
         try:
             price = stripe.Price.retrieve(obj.stripe_price_id)
-            logger.debug(f"Stripe price for {obj.stripe_price_id}: {price}")
+            #logger.debug(f"Stripe price for {obj.stripe_price_id}: {price}")
             return price
         except Exception as e:
             # DEBUG *******
-            logger.error(f"\n\n\n\n\n\n\n\n\nUsing Stripe API key: {stripe.api_key}\n\n\n\n\n\n\n\n")
-            logger.error(f"Failed to fetch Stripe price for {obj.stripe_price_id}: {e}")
+            #logger.error(f"\n\n\n\n\n\n\n\n\nUsing Stripe API key: {stripe.api_key}\n\n\n\n\n\n\n\n")
+            #logger.error(f"Failed to fetch Stripe price for {obj.stripe_price_id}: {e}")
             # END DEBUG ***
 
             return None

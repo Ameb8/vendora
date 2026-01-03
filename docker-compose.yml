@@ -44,18 +44,31 @@ services:
     env_file:
       - ./frontend/customer-page/.env
 
-  stripe-cli:
-    profiles: [ "dev" ]
+  stripe-cli-subscriptions:
+    profiles: ["dev"]
     image: stripe/stripe-cli:latest
-    container_name: stripe-cli
+    container_name: stripe-cli-subscriptions
     env_file:
       - ./backend/vendora/.env
-    volumes:
-      - ./stripe:/app/stripe
-    working_dir: /app
-    entrypoint: [ "/bin/sh" ]
-    command: [ "-c", "sleep infinity" ]
+    environment:
+      STRIPE_API_KEY: ${STRIPE_PRIVATE}
+    command: >
+      listen
+      --forward-to http://host.docker.internal:8000/subscriptions/stripe/webhook/
+      --events checkout.session.completed,customer.subscription.created
 
+  stripe-cli-payments:
+    profiles: ["dev"]
+    image: stripe/stripe-cli:latest
+    container_name: stripe-cli-payments
+    env_file:
+      - ./backend/vendora/.env
+    environment:
+      STRIPE_API_KEY: ${STRIPE_PRIVATE}
+    command: >
+      listen
+      --forward-to http://host.docker.internal:8000/payments/stripe/webhook/
+      --events payment_intent.succeeded,invoice.payment_succeeded
 
   backend_test:
     profiles: ["test"]
